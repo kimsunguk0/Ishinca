@@ -22,19 +22,24 @@
 **Pisco-4B** is a 4.2B-parameter student of NVIDIA's [Alpamayo-1.5-10B](https://huggingface.co/nvidia/Alpamayo-1.5-10B)
 end-to-end driving VLA. From 4 cameras × 4 frames and the ego history it produces a natural-language
 **Chain-of-Causation (CoC)** explanation and a **6.4 s trajectory**, like its teacher.
-In closed-loop simulation (AlpaSim, 150 scenes) it is **statistically indistinguishable from the 10B teacher**, and its
-DART variants **prune 25–50% of the vision tokens** without losing closed-loop score.
+In closed-loop simulation (AlpaSim, 150 scenes) it drives **on par with the 10B teacher**, and its DART variants
+**prune 25–50% of the vision tokens** without losing closed-loop score.
 
 <div align="center">
 
-| | Alpamayo-1.5 (Teacher) | **Pisco-4B** | **Pisco-4B-DART50** |
-|---|:---:|:---:|:---:|
-| Parameters | 10B | **4.2B** | **4.2B** |
-| Image tokens / call | 2,880 | 2,880 | **1,440** |
-| Closed-loop score (150 scenes) ↑ | 0.728 | **0.751** | **0.776** |
-| Δ vs Teacher [95% CI] | — | +0.023 [−0.030, +0.078] | +0.048 [−0.007, +0.103] |
+| | Alpamayo-1.5 (Teacher) | **Pisco-4B** | **Pisco-4B-DART75** | **Pisco-4B-DART50** |
+|---|:---:|:---:|:---:|:---:|
+| Parameters | 10B | **4.2B** | **4.2B** | **4.2B** |
+| Open-loop minADE6@6.4s ↓ · our val set¹ | 0.826 | 0.986 | 0.994 | 1.003 |
+| Open-loop minADE6@6.4s ↓ · gold644² | 0.831 | 1.045 | — | — |
+| Closed-loop score ↑ · AlpaSim 150 scenes | 0.728 | 0.751 | 0.731 | **0.776** |
 
 </div>
+
+<sub>¹ Held-out validation set we built from PhysicalAI-AV (4,000 samples, not used for training), vs ground truth.
+² The 644 public PhysicalAI-AV evaluation examples of **Table 10 (§6.4 Public Benchmark Evaluation)** in the
+Alpamayo-R1 paper ([arXiv:2511.00088](https://arxiv.org/abs/2511.00088)), clip list from NVIDIA's public recipe;
+measured by us with the official protocol (the paper reports 0.849 m for Alpamayo-R1-10B on this set).</sub>
 
 ## 📰 News
 
@@ -63,7 +68,7 @@ flowchart LR
     IN --> T
     IN --> D
     TV -. "CoC tokens + logits (CE + KL)" .-> SV
-    TV -. "image-token relations (V-rel)" .-> SV
+    TV -. "image-token relations" .-> SV
     TA -. "teacher trajectories" .-> SA
     SV --> COC["CoC text"]
     SA --> TRAJ["6.4 s trajectory<br/>(64 waypoints @ 10 Hz)"]
@@ -73,7 +78,7 @@ flowchart LR
 
 - 🧠 **Teacher-only supervision.** Every distillation target — CoC text, token distributions and trajectories — comes
   from the teacher; no ground-truth trajectories are mixed into the targets. The goal is to close the *teacher gap*.
-- 🔗 **Relation distillation (V-rel).** Besides CE/KL on the teacher's CoC, the student matches the teacher's
+- 🔗 **Relation distillation.** Besides CE/KL on the teacher's CoC, the student matches the teacher's
   *relations between image tokens*, which transfers how the teacher organises the scene instead of forcing
   incompatible hidden sizes to align. The VLM is fully fine-tuned from Cosmos-Reason2-2B.
 - 🎯 **AE28 action expert.** A 28-layer flow-matching expert initialised from evenly spaced teacher-expert layers and
@@ -86,36 +91,43 @@ flowchart LR
 
 ### Closed loop — AlpaSim, 150 scenes × 2 rollouts, all models on the same runtime
 
-Score = 0 on an at-fault collision or off-road event, otherwise `min(progress / 0.8, 1)`; paired scene bootstrap.
-Scene set = holdout58 + new32 + ext60 (scene lists in [`eval/closedloop/scenes`](eval/closedloop/scenes)).
+Score = 0 on an at-fault collision or off-road event, otherwise `min(progress / 0.8, 1)`, averaged over all 150 scenes
+(scene lists in [`eval/closedloop/scenes`](eval/closedloop/scenes)).
 
-| Scenes | Teacher 10B | Pisco-4B | Pisco-4B-DART50 | Pisco-4B-DART75 |
+| | Teacher 10B | Pisco-4B | Pisco-4B-DART75 | Pisco-4B-DART50 |
 |---|:---:|:---:|:---:|:---:|
-| holdout58 | 0.724 | 0.767 | **0.807** | 0.734 |
-| new32 | 0.719 | **0.773** | 0.772 | 0.744 |
-| ext60 | 0.737 | 0.724 | **0.748** | 0.722 |
-| **all 150** | 0.728 | 0.751 | **0.776** | 0.731 |
-| all 147 (3 invalid-map scenes removed) | 0.743 | 0.767 | **0.792** | 0.746 |
-| failed rollouts / 300 | 40 | 37 | **37** | 45 |
-| off-road / at-fault collision | 32 / 8 | 34 / **3** | **30** / 7 | 35 / 10 |
+| **Score** ↑ | 0.728 | 0.751 | 0.731 | **0.776** |
+| Failed rollouts / 300 ↓ | 40 | 37 | 45 | **37** |
+| ├ off-road | 32 | 34 | 35 | **30** |
+| └ at-fault collision | 8 | **3** | 10 | 7 |
 
-Δ vs Teacher (all 150): Pisco-4B **+0.023** [−0.030, +0.078] · DART50 **+0.048** [−0.007, +0.103] ·
-DART75 **+0.003** [−0.050, +0.058] — none significant: **the 4B student drives like the 10B teacher.**
+The differences to the teacher are within run-to-run noise (paired scene bootstrap): **the 4B student drives like the
+10B teacher.**
 
 ### Open loop
 
-| Benchmark | Model | ADE | FDE | minADE6@6.4s |
-|---|---|:---:|:---:|:---:|
-| val4000 · vs **Teacher** | Pisco-4B | 1.041 | 3.170 | 0.670 |
-| | Pisco-4B-DART50 | 1.068 | 3.250 | 0.698 |
-| val4000 · vs GT | Teacher 10B | 1.750 | 5.183 | 0.826 |
-| | Pisco-4B | 1.956 | 5.840 | 0.986 |
-| gold644 · vs GT (official protocol) | Teacher 10B | 2.241 | — | 0.831 |
-| | Pisco-4B | 2.381 | — | 1.045 |
+**Our validation set** — 4,000 held-out PhysicalAI-AV samples we built (not used for training); same initial noise for
+every model, flow-matching expert with 10 Euler steps.
 
-val4000 is an internal held-out split (AE uniform Euler 10, same x0 for both models, 1 sample unless min-of-6).
-gold644 follows the official Alpamayo evaluation protocol; clip IDs and per-clip teacher references are in
-[`eval/openloop/manifests`](eval/openloop/manifests). Details and caveats: [`docs/results.md`](docs/results.md).
+| Model | Image tokens | vs GT: ADE | vs GT: minADE6@6.4s | vs Teacher: ADE | vs Teacher: FDE | vs Teacher: minADE6@6.4s |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| Teacher 10B | 2,880 | 1.750 | 0.826 | — | — | — |
+| Pisco-4B | 2,880 | 1.957 | 0.986 | 1.041 | 3.172 | 0.670 |
+| Pisco-4B-DART75 | 2,160 | 1.957 | 0.994 | 1.043 | 3.173 | 0.686 |
+| Pisco-4B-DART50 | 1,440 | 1.972 | 1.003 | 1.068 | 3.250 | 0.698 |
+
+**gold644** — the 644 public PhysicalAI-AV evaluation examples of the Alpamayo-R1 paper,
+**Table 10, §6.4 Public Benchmark Evaluation** ([arXiv:2511.00088](https://arxiv.org/abs/2511.00088)), using the clip list
+of NVIDIA's public evaluation recipe and the official protocol (t0 = 5.1 s, 6 samples, T = 0.6, top-p 0.98, no navigation).
+
+| Model | ADE (1 sample) | minADE6@6.4s |
+|---|:---:|:---:|
+| Alpamayo-R1-10B *(reported in the paper, Table 10)* | — | 0.849 |
+| Alpamayo-1.5-10B (Teacher, measured by us) | 2.241 | 0.831 |
+| Pisco-4B (measured by us) | 2.381 | 1.045 |
+
+Clip IDs and per-clip teacher references: [`eval/openloop/manifests`](eval/openloop/manifests); protocol:
+[`eval/openloop/PROTOCOL.md`](eval/openloop/PROTOCOL.md); details: [`docs/results.md`](docs/results.md).
 
 ### Deployment (model compute only, full 16-frame window)
 

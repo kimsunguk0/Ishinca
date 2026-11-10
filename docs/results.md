@@ -9,7 +9,7 @@ Setup: simulation GPU host (renderer, runtime) + separate driver GPU host (BF16 
 AE uniform Euler 10, 1 path, no navigation). All four arms on the SAME runtime. Scene set 150 = holdout58 + new32 + ext60
 (ext60 pinned to NRE 26.01 artifacts). Score = 0 on at-fault collision or off-road, else min(progress / 0.8, 1).
 
-Arms: Teacher = Alpamayo-1.5 10B; Pisco-4B = V-rel (Cosmos-Reason2-2B backbone + relation KD + AE28);
+Arms: Teacher = Alpamayo-1.5 10B; Pisco-4B = Cosmos-Reason2-2B backbone + relation KD + AE28 action expert;
 DART75 / DART50 = Pisco-4B + DART vision-token pruning (keep 75% / 50%), retrained.
 
 | group | Teacher 10B | Pisco-4B | DART50 | DART75 |
@@ -27,8 +27,8 @@ DART75 +0.003 [-0.050, +0.058]; all not significant. (`score_closedloop.py` prin
 the bootstrap RNG differs.) DART50 - DART75: +0.045 [+0.016, +0.075], the only significant pair, likely noise at 2 rollouts.
 
 Reading: Student is statistically indistinguishable from the Teacher in closed loop, and DART keeps the overall score.
-The old "V-rel >> Teacher (+0.096)" from an earlier runtime shrank to +0.043 on holdout (n.s.) once the Teacher was
-re-run on the same runtime.
+An earlier runtime showed a larger student advantage on holdout58 (+0.096); with the Teacher re-run on the same
+runtime it is +0.043 (n.s.).
 
 Failure analysis (all arms): 3 invalid-map scenes (GT path itself off-road: a9e8dfc7, cc8cbc45, 29815599); the rest are
 junction/turn-route errors (no navigation input -> route ambiguity), lane-keep drift and a few at-fault collisions.
@@ -46,11 +46,25 @@ repository, AE mode, no navigation):
 | model | ADE (rollout=1) | minADE6@6.4s (rollout=6) |
 |---|---|---|
 | Teacher 10B (FP16, FlashAttention-2) | 2.241 | 0.831 |
-| Pisco-4B (V-rel bundle of 2026-10-07, bf16; mean of the two 322-clip shards) | 2.381 | 1.045 |
+| Pisco-4B (research bundle of 2026-10-07, bf16; mean of the two 322-clip shards) | 2.381 | 1.045 |
 
-The Pisco-4B row is the research-repo bundle `alpasim_student_vrel_fullft_20261007`; its weights were not hash-compared
-with the released `Pisco-4B` checkpoint `[UNVERIFIED]`. FDE and vs-Teacher metrics, DART variants on gold644, and val4000
-numbers: `[TODO: add from the final evaluation runs; not re-computed in this repository's validation]`.
+The Pisco-4B row comes from the research-repo bundle of 2026-10-07; its weights were not hash-compared with the released
+checkpoint, but the per-clip ADE of the released checkpoint matches it within 0.03 m on the 8 clips checked below.
+gold644 is the 644-example public set of Table 10 (§6.4) in the Alpamayo-R1 paper (arXiv:2511.00088); the paper
+reports minADE6@6.4s 0.849 m for Alpamayo-R1-10B and 0.913 m for Alpamayo-R1-0.5B. DART variants were not run on gold644.
+
+Validation set (4,000 held-out PhysicalAI-AV samples built by us, not used for training; same x0 for all models,
+AE uniform Euler 10; vs-Teacher reference = Teacher action-expert path 0 with its own CoC):
+
+| model | image tokens | vs GT ADE | vs GT minADE6 | vs Teacher ADE | vs Teacher FDE | vs Teacher minADE6 |
+|---|---|---|---|---|---|---|
+| Teacher 10B | 2,880 | 1.750 | 0.826 | - | - | - |
+| Pisco-4B | 2,880 | 1.957 | 0.986 | 1.041 | 3.172 | 0.670 |
+| Pisco-4B-DART75 (retrained) | 2,160 | 1.957 | 0.994 | 1.043 | 3.173 | 0.686 |
+| Pisco-4B-DART50 (retrained) | 1,440 | 1.972 | 1.003 | 1.068 | 3.250 | 0.698 |
+
+Without retraining, applying DART to Pisco-4B costs vs-Teacher ADE +0.127 (keep 75%) and +0.466 (keep 50%); retraining
+the backbone (1 epoch) and then the action expert (3 epochs) on the pruned input recovers it to +0.001 / +0.026.
 
 Smoke check on the 8 gold644 clips that were available offline (x86, RTX 3090, bf16, seed 42; n = 8, **not** a benchmark):
 

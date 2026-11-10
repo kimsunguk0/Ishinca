@@ -46,7 +46,7 @@ DART50, where the pruned model's token distribution is flatter). Hence cross-hos
 test uses near-greedy sampling (T = 0.01) for DART. Only one clip was used for the cross-host comparison.
 
 Cross-check against the research evaluation code (same 8 gold644 clips, Pisco-4B, bf16, seed 42 per call, rollout=1):
-per-clip ADE of this repository vs the original per-clip result of the research benchmark run (V-rel bundle of
+per-clip ADE of this repository vs the original per-clip result of the research benchmark run (research bundle of
 2026-10-07, FlashAttention-2, stock Conv3d): differences <= 0.03 m on every clip (mean 2.420 vs 2.421 m). minADE6 is a
 minimum over six random draws whose RNG order differs between the two implementations (batched `generate` there), so
 it agrees only statistically (mean 1.069 vs 1.229 m on 8 clips, per-clip differences up to 1 m); do not compare it
