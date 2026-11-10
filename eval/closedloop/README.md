@@ -7,8 +7,9 @@
 | Path | What |
 |---|---|
 | `driver_plugin/` | pip package `pisco_alpasim`: registers `model_type: pisco` in AlpaSim's `alpasim.models` entry-point group (thin adapter over `Alpamayo15Model` + `pisco.load_pisco`) |
+| `driver_plugin/smoke_predict.py` | simulator-free check: one saved sample through AlpaSim's driver `predict()` |
 | `driver_configs/` | driver configs for Pisco-2B / DART50 / DART75 |
-| `topology/3090_remote_driver_resize576.yaml` | wizard topology: simulation host + remote driver host |
+| `topology/remote_driver_resize576.yaml` | wizard topology: simulation host + remote driver host |
 | `scenes/scenes150_20261101.txt` | the 150 scene IDs in run order (holdout58 + new32 + ext60) |
 | `scenes/holdout58.txt`, `scenes/closedloop_ext60_20261030.json` | group membership (frozen selection, `training_use_forbidden: true`) |
 | `scenes/scenes_collrerun9_20261104.txt` | 9-scene collision rerun set |
@@ -43,7 +44,7 @@ python eval/closedloop/score_closedloop.py \
 3. Start the driver (`alpasim_driver_main --config-name driver_pisco2b port=6789`), then on the simulation host:
 
 ```
-uv run alpasim_wizard deploy=local topology=3090_remote_driver_resize576 driver=<driver cfg> \
+uv run alpasim_wizard deploy=local topology=remote_driver_resize576 driver=<driver cfg> \
   "wizard.external_services.driver=[<DRIVER_HOST>:6789]" scenes.scenes_csv=[eval/closedloop/scenes/sim_scenes_ext60pin_20261102.csv] \
   "scenes.scene_ids=[<ids from scenes150>]" runtime.simulation_config.n_rollouts=2
 ```
@@ -59,7 +60,9 @@ driver) and the driver keeps per-rollout state. Camera frames are downscaled to 
 * The reported runs used the BF16 compiled runtime (static KV cache + CUDA graphs, 16-frame window, AE uniform Euler 10,
   1 path, no navigation) inside our AlpaSim fork. `driver_plugin` uses the eager PyTorch rollout of this repository:
   same model, prompt, sampling rule and Euler steps, but not the compiled kernels, so rollouts are not bit-identical
-  and the driver is much slower. [UNVERIFIED: closed-loop scores with the eager Pisco plugin were not re-run.]
+  and the driver is much slower. [UNVERIFIED: closed-loop scores with the eager Pisco plugin were not re-run. Verified:
+  `smoke_predict.py` through AlpaSim's driver `predict()` (aarch64 driver env) reproduces `scripts/infer.py` exactly with the
+  same x0; the entry-point registration and a full simulator run were not exercised.]
 * Our fork carries runtime patches that are not upstream: driver RPC keepalive / `wait_for_ready` / retries over a LAN,
   an idempotent driver server, and the optional `ALPASIM_DRIVER_IMAGE_WH` frame downscale. These must be published or
   re-applied for the topology file to work as is.

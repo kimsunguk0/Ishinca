@@ -7,7 +7,7 @@ from pathlib import Path
 
 import torch
 
-from pisco.modeling import PiscoConfig, PiscoModel
+from pisco.modeling import PiscoConfig, PiscoModel, use_linear_patch_embed
 
 # A Pisco checkpoint directory contains: config.json (vlm_name_or_path = "./backbone"), model.safetensors
 # (full model: VLM + AE28), and backbone/ (tokenizer + processor + backbone config.json; NO backbone weights,
@@ -30,6 +30,7 @@ def load_pisco(
     dart_keep: float | None | str = "config",
     attn_implementation: str = "sdpa",
     revision: str | None = None,
+    linear_patch_embed: bool = True,
 ) -> PiscoModel:
     """Load a Pisco checkpoint.
 
@@ -37,6 +38,8 @@ def load_pisco(
         path_or_id: local directory or HF repo id (e.g. ``suukim/Pisco-2B``).
         dart_keep: DART keep fraction. ``"config"`` (default) uses ``pisco_dart_keep`` from config.json
             (set for the DART variants), ``None`` disables DART.
+        linear_patch_embed: run the vision patch-embedding Conv3d as an equivalent matmul (same math; avoids a very
+            slow cuDNN Conv3d path seen on RTX 5090 / aarch64). Set False for the stock Conv3d.
     """
     root = resolve_checkpoint(path_or_id, revision)
     cfg_dict = json.loads((root / "config.json").read_text())
@@ -45,5 +48,7 @@ def load_pisco(
     config = PiscoConfig(**cfg_dict)
     model = PiscoModel.from_pretrained(root, config=config, dtype=dtype, attn_implementation=attn_implementation)
     model = model.to(device).eval().requires_grad_(False)
+    if linear_patch_embed:
+        use_linear_patch_embed(model)
     model.set_dart(config.pisco_dart_keep if dart_keep == "config" else dart_keep)
     return model

@@ -57,8 +57,8 @@ Smoke check on the 8 gold644 clips that were available offline (x86, RTX 3090, b
 | model | ADE (m) | FDE (m) | minADE6 (m) |
 |---|---|---|---|
 | Teacher 10B (same 8 clips, from the gold644 reference run) | 1.685 | n/a | 0.655 |
-| Pisco-2B | 2.427 | 6.378 | 1.071 |
-| Pisco-2B-DART50 | 2.314 | 7.674 | 1.194 |
-| Pisco-2B-DART75 | 2.230 | 6.639 | 1.086 |
+| Pisco-2B | 2.420 | 6.352 | 1.069 |
+| Pisco-2B-DART50 | 2.399 | 7.572 | 1.069 |
+| Pisco-2B-DART75 | 2.245 | 6.679 | 1.016 |
 
 See `docs/validation_x86.md` for the x86 run details.

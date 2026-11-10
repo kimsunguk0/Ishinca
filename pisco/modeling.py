@@ -55,6 +55,29 @@ class PiscoConfig(Alpamayo1_5Config):
         self.traj_token_ids = tokenizer.traj_token_ids
 
 
+class _LinearPatchProj(torch.nn.Module):
+    """Conv3d(kernel == stride) patch projection as one matmul (mathematically identical).
+
+    The Qwen3-VL vision patch embedding is a Conv3d whose kernel equals its stride, i.e. a linear map of each flattened
+    patch. cuDNN's Conv3d is extremely slow on some GPUs/builds (measured: ~190 s per inference on an RTX 5090 with
+    torch 2.9.1 / aarch64, vs ~1 s with a matmul); a plain matmul avoids it.
+    """
+
+    def __init__(self, conv: torch.nn.Conv3d) -> None:
+        super().__init__()
+        self.weight = torch.nn.Parameter(conv.weight.detach().flatten(1).contiguous(), requires_grad=False)
+        self.bias = torch.nn.Parameter(conv.bias.detach().clone(), requires_grad=False)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:  # x: [N, C, T, P, P]
+        return torch.nn.functional.linear(x.flatten(1), self.weight, self.bias)
+
+
+def use_linear_patch_embed(model: "PiscoModel") -> None:
+    embed = model.vlm.model.visual.patch_embed
+    if isinstance(embed.proj, torch.nn.Conv3d):
+        embed.proj = _LinearPatchProj(embed.proj)
+
+
 def _top_p_sample(logits: torch.Tensor, temperature: float, top_p: float) -> torch.Tensor:
     """Temperature + nucleus sampling on ``[1, V]`` logits (same rule as HF ``TopPLogitsWarper``)."""
     logits = logits.float() / temperature
