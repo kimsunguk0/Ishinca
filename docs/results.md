@@ -9,10 +9,10 @@ Setup: simulation GPU host (renderer, runtime) + separate driver GPU host (BF16 
 AE uniform Euler 10, 1 path, no navigation). All four arms on the SAME runtime. Scene set 150 = holdout58 + new32 + ext60
 (ext60 pinned to NRE 26.01 artifacts). Score = 0 on at-fault collision or off-road, else min(progress / 0.8, 1).
 
-Arms: Teacher = Alpamayo-1.5 10B; Pisco-2B = V-rel (Cosmos-Reason2-2B backbone + relation KD + AE28);
-DART75 / DART50 = Pisco-2B + DART vision-token pruning (keep 75% / 50%), retrained.
+Arms: Teacher = Alpamayo-1.5 10B; Pisco-4B = V-rel (Cosmos-Reason2-2B backbone + relation KD + AE28);
+DART75 / DART50 = Pisco-4B + DART vision-token pruning (keep 75% / 50%), retrained.
 
-| group | Teacher 10B | Pisco-2B | DART50 | DART75 |
+| group | Teacher 10B | Pisco-4B | DART50 | DART75 |
 |---|---|---|---|---|
 | holdout58 | 0.724 | 0.767 | 0.807 | 0.734 |
 | new32 | 0.719 | 0.773 | 0.772 | 0.744 |
@@ -22,7 +22,7 @@ DART75 / DART50 = Pisco-2B + DART vision-token pruning (keep 75% / 50%), retrain
 | failed rollouts / 300 | 40 | 37 | 37 | 45 |
 | off-road / at-fault collision | 32 / 8 | 34 / 3 | 30 / 7 | 35 / 10 |
 
-Paired vs Teacher (all150, 95% scene bootstrap): Pisco-2B +0.023 [-0.030, +0.078]; DART50 +0.048 [-0.007, +0.103];
+Paired vs Teacher (all150, 95% scene bootstrap): Pisco-4B +0.023 [-0.030, +0.078]; DART50 +0.048 [-0.007, +0.103];
 DART75 +0.003 [-0.050, +0.058]; all not significant. (`score_closedloop.py` prints the same intervals to within +-0.001;
 the bootstrap RNG differs.) DART50 - DART75: +0.045 [+0.016, +0.075], the only significant pair, likely noise at 2 rollouts.
 
@@ -35,7 +35,7 @@ junction/turn-route errors (no navigation input -> route ambiguity), lane-keep d
 The plan, not the controller, is the cause (tracking error <= 0.01 m). 14 scenes fail for all four arms.
 
 Collision rerun (9 scenes where collisions differed, 6 new rollouts per arm): at-fault collisions / 54: Teacher 10,
-Pisco-2B 11, DART50 19, DART75 21; scene sign-flip p vs Teacher 0.33 (DART50), 0.19 (DART75). Trend (DART causes more at-fault
+Pisco-4B 11, DART50 19, DART75 21; scene sign-flip p vs Teacher 0.33 (DART50), 0.19 (DART75). Trend (DART causes more at-fault
 collisions in both experiments), not significant in either.
 
 ## Open loop
@@ -46,10 +46,10 @@ repository, AE mode, no navigation):
 | model | ADE (rollout=1) | minADE6@6.4s (rollout=6) |
 |---|---|---|
 | Teacher 10B (FP16, FlashAttention-2) | 2.241 | 0.831 |
-| Pisco-2B (V-rel bundle of 2026-10-07, bf16; mean of the two 322-clip shards) | 2.381 | 1.045 |
+| Pisco-4B (V-rel bundle of 2026-10-07, bf16; mean of the two 322-clip shards) | 2.381 | 1.045 |
 
-The Pisco-2B row is the research-repo bundle `alpasim_student_vrel_fullft_20261007`; its weights were not hash-compared
-with the released `Pisco-2B` checkpoint `[UNVERIFIED]`. FDE and vs-Teacher metrics, DART variants on gold644, and val4000
+The Pisco-4B row is the research-repo bundle `alpasim_student_vrel_fullft_20261007`; its weights were not hash-compared
+with the released `Pisco-4B` checkpoint `[UNVERIFIED]`. FDE and vs-Teacher metrics, DART variants on gold644, and val4000
 numbers: `[TODO: add from the final evaluation runs; not re-computed in this repository's validation]`.
 
 Smoke check on the 8 gold644 clips that were available offline (x86, RTX 3090, bf16, seed 42; n = 8, **not** a benchmark):
@@ -57,8 +57,8 @@ Smoke check on the 8 gold644 clips that were available offline (x86, RTX 3090, b
 | model | ADE (m) | FDE (m) | minADE6 (m) |
 |---|---|---|---|
 | Teacher 10B (same 8 clips, from the gold644 reference run) | 1.685 | n/a | 0.655 |
-| Pisco-2B | 2.420 | 6.352 | 1.069 |
-| Pisco-2B-DART50 | 2.399 | 7.572 | 1.069 |
-| Pisco-2B-DART75 | 2.245 | 6.679 | 1.016 |
+| Pisco-4B | 2.420 | 6.352 | 1.069 |
+| Pisco-4B-DART50 | 2.399 | 7.572 | 1.069 |
+| Pisco-4B-DART75 | 2.245 | 6.679 | 1.016 |
 
 See `docs/validation_x86.md` for the x86 run details.

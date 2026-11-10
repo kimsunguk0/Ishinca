@@ -1,9 +1,9 @@
-# AlpaSim driver config for Pisco-2B-DART50 (eager PyTorch rollout, bf16, 4 cameras x 4 frames, 1 path, no navigation).
-# Checkpoint directory = local download of the Hugging Face repo (hf download <user>/Pisco-2B-DART50 --local-dir ...).
+# AlpaSim driver config for Pisco-4B (eager PyTorch rollout, bf16, 4 cameras x 4 frames, 1 path, no navigation).
+# Checkpoint directory = local download of the Hugging Face repo (hf download <user>/Pisco-4B --local-dir ...).
 log_level: INFO
 model:
   model_type: pisco
-  checkpoint_path: /models/Pisco-2B-DART50
+  checkpoint_path: /models/Pisco-4B
   device: cuda
   use_classifier_free_guidance_nav: false
   compiled_runtime: false
@@ -20,7 +20,7 @@ inference:
   context_length: 4
 route:
   use_waypoint_commands: false
-output_dir: /tmp/pisco_driver/pisco2b_dart50
+output_dir: /tmp/pisco_driver/pisco4b
 trajectory_optimizer:
   enabled: false
 plot_debug_images: false

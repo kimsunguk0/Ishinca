@@ -3,13 +3,13 @@
 
 Examples:
   # a PhysicalAI-AV clip from the official dataset (needs HF access to the gated dataset)
-  python scripts/infer.py --checkpoint suukim/Pisco-2B --clip-id 030c760c-ae38-49aa-9ad8-f5650a545d26
+  python scripts/infer.py --checkpoint suukim/Pisco-4B --clip-id 030c760c-ae38-49aa-9ad8-f5650a545d26
 
   # local per-clip zips (data/README.md), DART variant, deterministic seed
-  python scripts/infer.py --checkpoint ./Pisco-2B-DART50 --data-root /data/clips --clip-id <uuid> --seed 42
+  python scripts/infer.py --checkpoint ./Pisco-4B-DART50 --data-root /data/clips --clip-id <uuid> --seed 42
 
   # replay exactly the same decoded pixels on another machine
-  python scripts/infer.py --checkpoint ./Pisco-2B --inputs-npz inputs.npz --seed 42
+  python scripts/infer.py --checkpoint ./Pisco-4B --inputs-npz inputs.npz --seed 42
 """
 
 import argparse

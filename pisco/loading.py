@@ -35,7 +35,7 @@ def load_pisco(
     """Load a Pisco checkpoint.
 
     Args:
-        path_or_id: local directory or HF repo id (e.g. ``suukim/Pisco-2B``).
+        path_or_id: local directory or HF repo id (e.g. ``suukim/Pisco-4B``).
         dart_keep: DART keep fraction. ``"config"`` (default) uses ``pisco_dart_keep`` from config.json
             (set for the DART variants), ``None`` disables DART.
         linear_patch_embed: run the vision patch-embedding Conv3d as an equivalent matmul (same math; avoids a very

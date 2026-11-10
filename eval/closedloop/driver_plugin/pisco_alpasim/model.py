@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 class PiscoDriverModel(Alpamayo15Model):
-    """Pisco-2B / Pisco-2B-DART50 / Pisco-2B-DART75 behind the AlpaSim driver interface (eager PyTorch rollout)."""
+    """Pisco-4B / Pisco-4B-DART50 / Pisco-4B-DART75 behind the AlpaSim driver interface (eager PyTorch rollout)."""
 
     @classmethod
     def from_config(cls, model_cfg, device, camera_ids, context_length, output_frequency_hz):

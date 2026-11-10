@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Smoke test of the plugin without the simulator: feed one saved sample through AlpaSim's driver `predict()`.
 
-  python smoke_predict.py --checkpoint ./Pisco-2B --inputs-npz inputs.npz [--reference pisco_out.npz]
+  python smoke_predict.py --checkpoint ./Pisco-4B --inputs-npz inputs.npz [--reference pisco_out.npz]
 
 inputs.npz comes from `scripts/infer.py --save-inputs`. With --reference (the .npz written by infer.py for the same
 checkpoint and seed 42) the printed difference should be ~0: the driver path and infer.py then run the same model on

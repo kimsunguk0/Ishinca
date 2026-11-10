@@ -1,47 +1,175 @@
-# Pisco
+<div align="center">
 
-**Pisco: Distilling Alpamayo 1.5 (10B) into a 2B VLA.**
+# ⛰️ Pisco
 
-Pisco (a smaller neighbouring peak of Alpamayo) is a 2B Vision-Language-Action student of NVIDIA's
-[Alpamayo-1.5-10B](https://huggingface.co/nvidia/Alpamayo-1.5-10B) (the Teacher). Backbone: Cosmos-Reason2-2B
-(Qwen3-VL-2B architecture), trained with image-relation distillation ("V-rel"), plus a 28-layer flow-matching action
-expert (AE28). It takes 4 cameras x 4 frames and 16 ego-history poses and outputs a Chain-of-Causation (CoC) text and a
-6.4 s trajectory (64 waypoints at 10 Hz). No navigation input. All distillation targets come from the Teacher; no
-ground-truth trajectories are mixed into the targets.
+### Distilling NVIDIA Alpamayo 1.5 (10B) into a 4B Vision-Language-Action Model for Autonomous Driving
 
-| Model | Variant | Image tokens |
-|---|---|---:|
-| `suukim/Pisco-2B` | V-rel | 2,880 |
-| `suukim/Pisco-2B-DART75` | + DART vision-token pruning, keep 75% (retrained) | 2,160 |
-| `suukim/Pisco-2B-DART50` | + DART vision-token pruning, keep 50% (retrained) | 1,440 |
+**Sunguk Kim**
 
-(`suukim` is a placeholder account; replace before publishing.)
+[![Models](https://img.shields.io/badge/🤗%20Models-Pisco--4B-yellow)](#-model-zoo)
+[![Code License](https://img.shields.io/badge/Code-Apache%202.0-blue.svg)](LICENSE)
+[![Weights License](https://img.shields.io/badge/Weights-NVIDIA%20Open%20Model%20License-76b900.svg)](NOTICE)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
 
-This is a research release, not a production driving system.
+*Pisco is the smaller, friendlier summit right next to Alpamayo in Peru's Cordillera Blanca.*
 
-## Install
+</div>
+
+---
+
+## TL;DR
+
+**Pisco-4B** is a 4.2B-parameter student of NVIDIA's [Alpamayo-1.5-10B](https://huggingface.co/nvidia/Alpamayo-1.5-10B)
+end-to-end driving VLA. From 4 cameras × 4 frames and the ego history it produces a natural-language
+**Chain-of-Causation (CoC)** explanation and a **6.4 s trajectory**, like its teacher.
+In closed-loop simulation (AlpaSim, 150 scenes) it is **statistically indistinguishable from the 10B teacher**, and its
+DART variants **prune 25–50% of the vision tokens** without losing closed-loop score.
+
+<div align="center">
+
+| | Alpamayo-1.5 (Teacher) | **Pisco-4B** | **Pisco-4B-DART50** |
+|---|:---:|:---:|:---:|
+| Parameters | 10B | **4.2B** | **4.2B** |
+| Image tokens / call | 2,880 | 2,880 | **1,440** |
+| Closed-loop score (150 scenes) ↑ | 0.728 | **0.751** | **0.776** |
+| Δ vs Teacher [95% CI] | — | +0.023 [−0.030, +0.078] | +0.048 [−0.007, +0.103] |
+
+</div>
+
+## 📰 News
+
+- **2026-11** — Code, evaluation protocol and the three Pisco-4B checkpoints released.
+
+## 🔍 Overview
+
+End-to-end driving VLAs such as Alpamayo reason in language before they act, but at 10B parameters with ~2.9k image
+tokens per call they are hard to deploy on in-vehicle computers. Pisco asks a simple question: **how much of the teacher
+survives when the whole model — reasoning and action — is distilled into a much smaller VLA, and how far can we then cut
+the visual input?**
+
+```mermaid
+flowchart LR
+    subgraph IN["Inputs"]
+        C["4 cameras × 4 frames<br/>(2,880 image tokens)"]
+        H["ego history<br/>(16 poses)"]
+    end
+    subgraph T["Teacher · Alpamayo-1.5 10B (frozen)"]
+        TV["VLM"] --> TA["Action expert"]
+    end
+    subgraph S["Student · Pisco-4B"]
+        D["DART token pruning<br/>(optional, keep 50–75%)"] --> SV["VLM · Cosmos-Reason2-2B"]
+        SV --> SA["Action expert · AE28<br/>(flow matching)"]
+    end
+    IN --> T
+    IN --> D
+    TV -. "CoC tokens + logits (CE + KL)" .-> SV
+    TV -. "image-token relations (V-rel)" .-> SV
+    TA -. "teacher trajectories" .-> SA
+    SV --> COC["CoC text"]
+    SA --> TRAJ["6.4 s trajectory<br/>(64 waypoints @ 10 Hz)"]
+```
+
+**Key ingredients**
+
+- 🧠 **Teacher-only supervision.** Every distillation target — CoC text, token distributions and trajectories — comes
+  from the teacher; no ground-truth trajectories are mixed into the targets. The goal is to close the *teacher gap*.
+- 🔗 **Relation distillation (V-rel).** Besides CE/KL on the teacher's CoC, the student matches the teacher's
+  *relations between image tokens*, which transfers how the teacher organises the scene instead of forcing
+  incompatible hidden sizes to align. The VLM is fully fine-tuned from Cosmos-Reason2-2B.
+- 🎯 **AE28 action expert.** A 28-layer flow-matching expert initialised from evenly spaced teacher-expert layers and
+  trained on the distilled VLM's own prefix (CoC + image KV), so the expert reads what the student actually produces.
+- ✂️ **DART vision-token pruning.** [DART](https://arxiv.org/abs/2502.11494) keeps a diverse subset of merged image
+  tokens (pivots + duplicate removal) while preserving their original mRoPE positions; the student is then retrained so
+  the action expert adapts to the shorter KV. 50% pruning cuts Jetson Thor prefill from 94.2 → 41.4 ms.
+
+## 🏆 Results
+
+### Closed loop — AlpaSim, 150 scenes × 2 rollouts, all models on the same runtime
+
+Score = 0 on an at-fault collision or off-road event, otherwise `min(progress / 0.8, 1)`; paired scene bootstrap.
+Scene set = holdout58 + new32 + ext60 (scene lists in [`eval/closedloop/scenes`](eval/closedloop/scenes)).
+
+| Scenes | Teacher 10B | Pisco-4B | Pisco-4B-DART50 | Pisco-4B-DART75 |
+|---|:---:|:---:|:---:|:---:|
+| holdout58 | 0.724 | 0.767 | **0.807** | 0.734 |
+| new32 | 0.719 | **0.773** | 0.772 | 0.744 |
+| ext60 | 0.737 | 0.724 | **0.748** | 0.722 |
+| **all 150** | 0.728 | 0.751 | **0.776** | 0.731 |
+| all 147 (3 invalid-map scenes removed) | 0.743 | 0.767 | **0.792** | 0.746 |
+| failed rollouts / 300 | 40 | 37 | **37** | 45 |
+| off-road / at-fault collision | 32 / 8 | 34 / **3** | **30** / 7 | 35 / 10 |
+
+Δ vs Teacher (all 150): Pisco-4B **+0.023** [−0.030, +0.078] · DART50 **+0.048** [−0.007, +0.103] ·
+DART75 **+0.003** [−0.050, +0.058] — none significant: **the 4B student drives like the 10B teacher.**
+
+### Open loop
+
+| Benchmark | Model | ADE | FDE | minADE6@6.4s |
+|---|---|:---:|:---:|:---:|
+| val4000 · vs **Teacher** | Pisco-4B | 1.041 | 3.170 | 0.670 |
+| | Pisco-4B-DART50 | 1.068 | 3.250 | 0.698 |
+| val4000 · vs GT | Teacher 10B | 1.750 | 5.183 | 0.826 |
+| | Pisco-4B | 1.956 | 5.840 | 0.986 |
+| gold644 · vs GT (official protocol) | Teacher 10B | 2.241 | — | 0.831 |
+| | Pisco-4B | 2.381 | — | 1.045 |
+
+val4000 is an internal held-out split (AE uniform Euler 10, same x0 for both models, 1 sample unless min-of-6).
+gold644 follows the official Alpamayo evaluation protocol; clip IDs and per-clip teacher references are in
+[`eval/openloop/manifests`](eval/openloop/manifests). Details and caveats: [`docs/results.md`](docs/results.md).
+
+### Deployment (model compute only, full 16-frame window)
+
+| Platform | Configuration | Latency |
+|---|---|:---:|
+| RTX 5090 | FP8 vision (QAD) + FP8 LLM (PTQ), streaming, 4-step action expert | **93.6 ms** (p95 98.5) |
+| Jetson AGX Thor | TensorRT Edge-LLM, NVFP4 4-step expert + INT8 LM head + GQA plugin | 383.3 ms |
+| Jetson AGX Thor | DART50, FP8 10-step expert (vs 498.1 ms without DART) | 401.8 ms |
+| RTX 3090 (x86) | this repo, eager PyTorch bf16, 8.0 GiB peak VRAM | ~1.1 s |
+
+The optimised runtimes (FP8/NVFP4 engines, streaming, 4-step expert) are research artefacts and are **not** part of this
+release; the released checkpoints use the 10-step expert and run with the eager PyTorch code below.
+
+### What still goes wrong
+
+Failures are scene-systematic and shared with the teacher (14 scenes fail for all four models). The plan — not the
+controller — is the cause (tracking error ≤ 0.01 m): turns cutting corners, route ambiguity at junctions and driveways
+(**no navigation input**), lane-keeping drift, and nudging around stopped vehicles. DART variants show a non-significant
+trend towards more at-fault collisions (150-scene run: Teacher 8 / Pisco-4B 3 / DART50 7 / DART75 10; 9-scene rerun ×6:
+10 / 11 / 19 / 21).
+
+## 🤗 Model Zoo
+
+| Model | Vision tokens | DART keep | Weights |
+|---|:---:|:---:|---|
+| **Pisco-4B** | 2,880 | — | [`suukim/Pisco-4B`](https://huggingface.co/suukim/Pisco-4B) |
+| **Pisco-4B-DART75** | 2,160 | 0.75 | [`suukim/Pisco-4B-DART75`](https://huggingface.co/suukim/Pisco-4B-DART75) |
+| **Pisco-4B-DART50** | 1,440 | 0.50 | [`suukim/Pisco-4B-DART50`](https://huggingface.co/suukim/Pisco-4B-DART50) |
+
+Each checkpoint is a single bf16 `model.safetensors` (VLM 2.45B + action expert 1.77B parameters) plus the tokenizer and
+processor files; DART checkpoints store their keep ratio in `config.json` (`pisco_dart_keep`).
+
+## 🚀 Getting Started
+
+### Install
 
 ```bash
+git clone https://github.com/kimsunguk0/Pisco && cd Pisco
 pip install "git+https://github.com/NVlabs/alpamayo1.5.git" physical_ai_av   # upstream inference code (Apache-2.0)
-pip install -e .                                                               # this repository
+pip install -e .
 ```
 
-`transformers==4.57.1`, PyTorch >= 2.6 with CUDA. Tested on x86 (RTX 3090, torch 2.8 / CUDA 12.8) and aarch64 (RTX 5090,
-torch 2.9.1); see `docs/validation_x86.md`. A Docker recipe is in `Dockerfile` (`docker build -t pisco:dev .`).
-The model needs about 8 GiB of GPU memory in bf16.
+`transformers==4.57.1`, PyTorch ≥ 2.6 with CUDA, ~8 GiB GPU memory. Tested on x86 (RTX 3090, torch 2.8 / CUDA 12.8) and
+aarch64 (RTX 5090, torch 2.9.1) — see [`docs/validation_x86.md`](docs/validation_x86.md). Docker: `docker build -t pisco .`
 
-## Quickstart
+### Inference
 
 ```bash
-hf download suukim/Pisco-2B --local-dir ./Pisco-2B      # or pass the repo id directly
+hf download suukim/Pisco-4B --local-dir ./Pisco-4B
 
-# a PhysicalAI-AV clip (gated dataset, see data/README.md)
-python scripts/infer.py --checkpoint ./Pisco-2B --clip-id 030c760c-ae38-49aa-9ad8-f5650a545d26 --seed 42
-# DART variants read their keep fraction from config.json (key pisco_dart_keep); or force it:
-python scripts/infer.py --checkpoint ./Pisco-2B-DART50 --dart-keep 0.5 --clip-id <uuid>
+# one PhysicalAI-AV clip (gated dataset, see data/README.md)
+python scripts/infer.py --checkpoint ./Pisco-4B --clip-id 030c760c-ae38-49aa-9ad8-f5650a545d26 --seed 42
+python scripts/infer.py --checkpoint ./Pisco-4B-DART50 --clip-id <uuid>      # DART keep read from config.json
 ```
-
-Python:
 
 ```python
 import torch
@@ -49,58 +177,77 @@ from pisco import load_pisco, build_model_inputs
 from pisco.data import load_clip
 from pisco.inputs import get_processor
 
-model = load_pisco("./Pisco-2B")                       # local dir or HF repo id; backbone weights are NOT needed
+model = load_pisco("suukim/Pisco-4B")                  # local dir or HF repo id
 processor = get_processor(model)
-data = load_clip("<clip-id>", t0_us=5_100_000)          # image_frames [4 cams,4,3,H,W], ego_history_xyz/rot
+data = load_clip("<clip-id>", t0_us=5_100_000)          # 4 cams × 4 frames + ego history
 inputs = build_model_inputs(model, processor, data["image_frames"], data["camera_indices"],
                             data["ego_history_xyz"], data["ego_history_rot"])
 torch.manual_seed(42)
 with torch.autocast("cuda", dtype=torch.bfloat16):
     xyz, rot, extra = model.sample_trajectories_from_data_with_vlm_rollout(
-        data=inputs, top_p=0.98, temperature=0.6, num_traj_samples=1, max_generation_length=256, return_extra=True)
-print(extra["cot"][0, 0, 0])       # CoC text
-print(xyz[0, 0, 0, :, :2])         # 64 x 2, ego frame at t0, metres
+        data=inputs, top_p=0.98, temperature=0.6, num_traj_samples=1,
+        max_generation_length=256, return_extra=True)
+
+print(extra["cot"][0, 0, 0])   # e.g. "Nudge to the right to clear the construction barrels blocking the left side of our lane"
+print(xyz[0, 0, 0, :, :2])     # 64 × 2 waypoints, ego frame at t0, metres
 ```
 
-`scripts/infer.py` also accepts `--inputs-npz` (decoded pixels saved with `--save-inputs`) so other machines replay the
-identical input.
+## 📏 Evaluation
 
-## Layout
+| | Where | What you get |
+|---|---|---|
+| Open loop | [`eval/openloop`](eval/openloop) | protocol, ADE / FDE / minADE6 vs GT and vs Teacher, gold644 manifest + teacher references, teacher-reference generation |
+| Closed loop | [`eval/closedloop`](eval/closedloop) | AlpaSim driver plugin + configs, remote-driver topology, 150-scene list, scoring and re-aggregation that reproduces the table above |
+| Data | [`data/README.md`](data/README.md) | how to obtain PhysicalAI-AV and the expected directory layout (no data is redistributed) |
+
+## 🗂️ Repository Layout
 
 ```
-pisco/                  model (Alpamayo1_5 subclass with the student tokenizer), loader, inputs, DART, clip loading
-scripts/infer.py        frames + ego history -> CoC text + 6.4 s trajectory
-eval/openloop/          protocol, metrics, run_openloop.py, Teacher reference generation, clip-ID manifests
-eval/closedloop/        AlpaSim driver plugin + configs, topology, 150-scene list, scoring/re-aggregation
-data/README.md          how to obtain PhysicalAI-AV and the expected directory structure (no data shipped)
-docs/results.md         results; docs/validation_x86.md  x86 validation log
-tests/                  DART unit tests, rollout-parity test (GPU)
+pisco/            model (Alpamayo1_5 subclass with the student tokenizer), loader, inputs, DART, clip loading
+scripts/infer.py  frames + ego history → CoC text + 6.4 s trajectory
+eval/openloop/    protocol, metrics, runners, manifests
+eval/closedloop/  AlpaSim plugin, configs, topology, scene lists, scoring
+docs/             results and validation logs
+tests/            DART unit tests, rollout-parity test (GPU)
 ```
 
-How the code relates to upstream: Pisco does not copy NVIDIA's code. `PiscoModel` subclasses `alpamayo1_5.Alpamayo1_5`
-and only swaps in the student's own tokenizer (16 special tokens, differs from the release tokenizer). Without DART the
-upstream `sample_trajectories_from_data_with_vlm_rollout` runs unchanged; with DART an explicit rollout (prefill ->
-CoC decode -> upstream flow-matching expert) is used. That rollout is bit-identical to upstream when nothing is pruned
-(checked on one clip).
+Pisco does not copy NVIDIA's code: `PiscoModel` subclasses `alpamayo1_5.Alpamayo1_5` and only swaps in the student
+tokenizer. Without DART the upstream rollout runs unchanged; with DART an explicit rollout (prefill → CoC decode →
+upstream flow-matching expert) is used, bit-identical to upstream when nothing is pruned.
 
-## DART
+## ⚠️ Limitations
 
-DART variants prune image tokens at the embedding level after the vision merger (per image `ceil(180 * keep)` of 180
-merged tokens, pivots by L1 norm, duplicate removal by cosine similarity); kept tokens keep their original mRoPE
-positions and every later position continues the full layout. The pruning is applied by the inference code, not stored
-in the weights; running a DART checkpoint without pruning, or Pisco-2B with pruning, is not the evaluated configuration.
-The eager PyTorch rollout here is not faster with DART (the speedups were measured in compiled/TensorRT runtimes).
+- Research release — **not** a production driving system and not validated on real vehicles at scale.
+- No navigation/route input: at junctions the model picks a plausible route, not necessarily the intended one.
+- Closed-loop results use non-reactive replayed traffic; at-fault labels are imperfect when the ego is slower than the log.
+- Trained and evaluated on PhysicalAI-AV camera rigs; camera mounting/calibration changes shift the predicted path.
 
-## Results (summary)
+## 📖 Citation
 
-Closed loop, AlpaSim, 150 scenes x 2 rollouts (Teacher 0.728, Pisco-2B 0.751, DART50 0.776, DART75 0.731; all paired
-differences vs Teacher n.s.) and open loop: `docs/results.md`.
+```bibtex
+@misc{kim2026pisco,
+  title        = {Pisco: Distilling Alpamayo 1.5 (10B) into a 4B Vision-Language-Action Model for Autonomous Driving},
+  author       = {Kim, Sunguk},
+  year         = {2026},
+  howpublished = {\url{https://github.com/kimsunguk0/Pisco}}
+}
+```
 
-## License
+## 🙏 Acknowledgements
 
-* **Code in this repository**: Apache License 2.0 (`LICENSE`).
-* **Model weights** (Hugging Face repos): NVIDIA Open Model License (backbone derived from Cosmos-Reason2-2B); Teacher /
-  action-expert initialisation from Alpamayo-1.5-10B (OpenMDW-1.1); tokenizer files derive from Qwen3-VL (Apache-2.0).
-  Where upstream terms differ, the more restrictive NVIDIA Open Model License applies to the weights.
-* Dataset: NVIDIA Autonomous Vehicle Dataset License Agreement (PhysicalAI-AV); nothing is redistributed here.
-* See `NOTICE`. Licensed by NVIDIA Corporation under the NVIDIA Open Model License. Built on NVIDIA Cosmos.
+Pisco stands on the shoulders of
+[NVIDIA Alpamayo 1.5](https://github.com/NVlabs/alpamayo1.5) (teacher and inference code),
+[NVIDIA Cosmos-Reason2](https://huggingface.co/nvidia/Cosmos-Reason2-2B) (student backbone),
+[Qwen3-VL](https://github.com/QwenLM/Qwen3-VL) (architecture and tokenizer),
+[AlpaSim](https://github.com/NVlabs/alpasim) (closed-loop simulation),
+the PhysicalAI-AV dataset, and
+[DART](https://arxiv.org/abs/2502.11494) (token pruning).
+
+## 📄 License
+
+- **Code**: Apache License 2.0 ([`LICENSE`](LICENSE)).
+- **Weights**: NVIDIA Open Model License (backbone derived from Cosmos-Reason2-2B); teacher-derived parts from
+  Alpamayo-1.5-10B (OpenMDW-1.1); tokenizer files from Qwen3-VL (Apache-2.0). See [`NOTICE`](NOTICE).
+- **Data**: PhysicalAI-AV is governed by NVIDIA's AV dataset license; nothing is redistributed here.
+
+*Licensed by NVIDIA Corporation under the NVIDIA Open Model License. Built on NVIDIA Cosmos.*

@@ -1,6 +1,6 @@
 # Closed-loop evaluation (AlpaSim)
 
-150 scenes x 2 rollouts, same runtime for every arm (Teacher 10B, Pisco-2B, DART50, DART75). Results: `docs/results.md`.
+150 scenes x 2 rollouts, same runtime for every arm (Teacher 10B, Pisco-4B, DART50, DART75). Results: `docs/results.md`.
 
 ## Contents
 
@@ -8,7 +8,7 @@
 |---|---|
 | `driver_plugin/` | pip package `pisco_alpasim`: registers `model_type: pisco` in AlpaSim's `alpasim.models` entry-point group (thin adapter over `Alpamayo15Model` + `pisco.load_pisco`) |
 | `driver_plugin/smoke_predict.py` | simulator-free check: one saved sample through AlpaSim's driver `predict()` |
-| `driver_configs/` | driver configs for Pisco-2B / DART50 / DART75 |
+| `driver_configs/` | driver configs for Pisco-4B / DART50 / DART75 |
 | `topology/remote_driver_resize576.yaml` | wizard topology: simulation host + remote driver host |
 | `scenes/scenes150_20261101.txt` | the 150 scene IDs in run order (holdout58 + new32 + ext60) |
 | `scenes/holdout58.txt`, `scenes/closedloop_ext60_20261030.json` | group membership (frozen selection, `training_use_forbidden: true`) |
@@ -31,7 +31,7 @@ AlpaSim's per-rollout `score` for all 300 rollouts of each arm. Statistics are p
 ```
 python eval/closedloop/score_closedloop.py \
   --arm teacher="runs/teacher/*/aggregate/results-summary.json" \
-  --arm pisco2b="runs/pisco2b/*/aggregate/results-summary.json" \
+  --arm pisco4b="runs/pisco4b/*/aggregate/results-summary.json" \
   --arm dart50="runs/dart50/*/aggregate/results-summary.json" --baseline teacher
 ```
 
@@ -39,9 +39,9 @@ python eval/closedloop/score_closedloop.py \
 
 1. Install AlpaSim (https://github.com/NVlabs/alpasim) on the simulation host and the plugin on the driver host:
    `pip install -e . && pip install -e eval/closedloop/driver_plugin` (the driver host needs `alpasim_driver`).
-2. Download a Pisco checkpoint on the driver host and edit `checkpoint_path` in `driver_configs/driver_pisco2b*.yaml`.
+2. Download a Pisco checkpoint on the driver host and edit `checkpoint_path` in `driver_configs/driver_pisco4b*.yaml`.
    DART variants read `pisco_dart_keep` from the checkpoint `config.json`, or set `PISCO_DART_KEEP=0.5` in the driver env.
-3. Start the driver (`alpasim_driver_main --config-name driver_pisco2b port=6789`), then on the simulation host:
+3. Start the driver (`alpasim_driver_main --config-name driver_pisco4b port=6789`), then on the simulation host:
 
 ```
 uv run alpasim_wizard deploy=local topology=remote_driver_resize576 driver=<driver cfg> \

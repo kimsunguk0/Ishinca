@@ -8,7 +8,7 @@ Metrics: ADE, FDE, minADE6@6.4 s, reported against the recorded ground truth ("v
 | Set | File | Notes |
 |---|---|---|
 | gold644 | `manifests/gold644_clip_ids.txt` | 644 clips of NVIDIA's public gold evaluation list, original order, t0 = 5.1 s, no navigation. Primary external benchmark. |
-| val4000 | `manifests/val4000_row_ids.json` | 4000 held-out internal rows (840 nav / 3160 no-nav), row IDs only. Used for development; not reproducible from this repo alone (row -> clip mapping is not included). `[TODO before publishing: export clip_id + t0 per row]` |
+| val4000 | `manifests/val4000_row_ids.json` | 4000 held-out internal rows (840 nav / 3160 no-nav), row IDs only. Used for development; not reproducible from this repo alone (row -> clip mapping is not included). (row -> clip export: TODO) |
 
 ## Inputs and sampling (gold644)
 
@@ -19,7 +19,7 @@ Metrics: ADE, FDE, minADE6@6.4 s, reported against the recorded ground truth ("v
 * Two independent calls per clip: rollout = 1 (ADE, FDE) and rollout = 6 (minADE6, min over the six per-path ADEs).
   T = 0.6, top_p = 0.98, no top-k, `torch` seed reset to 42 before every call, bf16 autocast, batch 1, AE flow matching
   Euler 10 steps, max 256 generated tokens.
-* DART variants run with their keep fraction (0.75 / 0.5); evaluating a DART checkpoint without pruning, or Pisco-2B with
+* DART variants run with their keep fraction (0.75 / 0.5); evaluating a DART checkpoint without pruning, or Pisco-4B with
   pruning, is not the evaluated configuration.
 
 `run_openloop.py` implements this. The Teacher reference numbers in `manifests/gold644_teacher10b_reference.jsonl` were

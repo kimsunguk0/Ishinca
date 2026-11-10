@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Open-loop evaluation of a Pisco checkpoint (gold644-style protocol, see PROTOCOL.md).
 
-  python eval/openloop/run_openloop.py --checkpoint ./Pisco-2B --data-root /data/clips \
-      --manifest eval/openloop/manifests/gold644_clip_ids.txt --out runs/pisco2b_gold644
+  python eval/openloop/run_openloop.py --checkpoint ./Pisco-4B --data-root /data/clips \
+      --manifest eval/openloop/manifests/gold644_clip_ids.txt --out runs/pisco4b_gold644
 
 Per clip: t0 = 5.1 s, 4 cameras x 4 frames, 16-step history, no navigation input. Two independent calls:
 rollout=1 (ADE/FDE) and rollout=6 (minADE6). Sampling T=0.6, top_p=0.98, bf16 autocast, torch seed reset to

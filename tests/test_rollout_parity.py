@@ -1,6 +1,6 @@
 """GPU integration test (skipped unless PISCO_CKPT and PISCO_INPUTS_NPZ are set).
 
-  PISCO_CKPT=./Pisco-2B PISCO_INPUTS_NPZ=inputs.npz python -m pytest tests/test_rollout_parity.py
+  PISCO_CKPT=./Pisco-4B PISCO_INPUTS_NPZ=inputs.npz python -m pytest tests/test_rollout_parity.py
 
 Checks on one clip: (1) the explicit Pisco rollout equals the upstream HF-generate path, (2) DART keep=1.0 equals no DART.
 """

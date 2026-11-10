@@ -39,7 +39,7 @@ class PiscoConfig(Alpamayo1_5Config):
     """Alpamayo 1.5 config that reads vocabulary metadata from the student tokenizer.
 
     ``pisco_dart_keep`` (optional, in config.json) is the DART keep fraction of the checkpoint
-    (0.5 / 0.75 for the DART variants, absent for Pisco-2B).
+    (0.5 / 0.75 for the DART variants, absent for Pisco-4B).
     """
 
     def __init__(self, pisco_dart_keep: float | None = None, **kwargs: Any) -> None:

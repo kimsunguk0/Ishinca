@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Re-aggregate AlpaSim closed-loop results for the 150-scene Pisco protocol.
 
-  python score_closedloop.py --arm pisco2b=runs/pisco2b/*/aggregate/results-summary.json \
+  python score_closedloop.py --arm pisco4b=runs/pisco4b/*/aggregate/results-summary.json \
                              --arm teacher=runs/teacher/*/aggregate/results-summary.json
 
 Scoring (AlpaSim ``score_criteria``): a rollout fails on at-fault collision or off-road and then scores 0; otherwise

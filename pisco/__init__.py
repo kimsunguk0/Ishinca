@@ -1,4 +1,4 @@
-"""Pisco: Distilling Alpamayo 1.5 (10B) into a 2B VLA."""
+"""Pisco: Distilling Alpamayo 1.5 (10B) into a 4B VLA."""
 
 __version__ = "0.1.0"
 __all__ = ["PiscoModel", "build_model_inputs", "load_pisco"]
