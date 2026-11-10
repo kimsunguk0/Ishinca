@@ -1,0 +1,630 @@
+{
+  "author": "Pisco authors",
+  "created": "2026-10-30",
+  "purpose": "Extend the closed-loop set to 150 scenes (holdout58 + new32 + ext60) for DART-75 / DART-50 vs V-rel",
+  "status": "frozen_before_download_or_inference",
+  "training_use_forbidden": true,
+  "selection": "Eligible scenes 33..92 in the new32 SHA256(seed + scene_id) order (the 60 after new32); independent of predictions and outcomes",
+  "selection_seed": "bf16-new-scenes-20261010:",
+  "eligible_scenes": 856,
+  "catalog_sha256": "97a018dad34a0873260f25cace89fec0c323f0b3c4cfaa612738862967c0d0be",
+  "catalog_revision": "26.01",
+  "excluded_counts": {
+    "train": 50445,
+    "val": 5000,
+    "official": 644,
+    "previous_closedloop": 60,
+    "new32": 32
+  },
+  "scene_ids": [
+    "clipgt-9b6a51bd-cb54-4a68-8ed8-0e33a504c67e",
+    "clipgt-1f816661-b271-479b-ab67-72057de1aadd",
+    "clipgt-8588b919-8293-4708-a7cf-b911d05791a6",
+    "clipgt-b27b3375-5028-44bc-bec7-64785793734a",
+    "clipgt-11336325-e0c8-49ab-9f34-0be03dd1b8e2",
+    "clipgt-404cc92f-193e-4948-b600-77ddc425dcf0",
+    "clipgt-eaf4352c-a194-4b09-a5a1-144c6a0d7dbc",
+    "clipgt-24db7eb4-eddf-4b20-ba7e-ca54f9b44f11",
+    "clipgt-8c129b2d-9aeb-484e-a926-695ea77c8429",
+    "clipgt-764c8a4a-bddc-4e3c-9df4-0941982efeba",
+    "clipgt-e39fb49b-8938-4a63-811e-1edff7d1065d",
+    "clipgt-0e02fb8c-182a-41a6-a194-010bc7ef4f28",
+    "clipgt-6a3927f1-777d-49c5-85ef-4c74537a03ae",
+    "clipgt-9a190a00-0303-4c11-8acf-9a5e6d1c4b71",
+    "clipgt-fe0c2168-7da0-46b7-b29f-efb80b0a41dd",
+    "clipgt-7dc59d0d-7582-48b2-a6f9-2d7288b2c556",
+    "clipgt-f7bbceae-cc40-4fdb-9643-122c54f2c7b2",
+    "clipgt-64c33c12-0bf2-4e64-a92c-e1129485566b",
+    "clipgt-11e62ffc-ebd9-448b-88ca-61796a5e5db6",
+    "clipgt-13fb89b9-2196-4545-abb4-c3029d89fcbe",
+    "clipgt-bd08d260-83a3-46aa-8799-d3aa50fb0e20",
+    "clipgt-ae723017-f248-42f1-a480-4328524ce949",
+    "clipgt-a9e8dfc7-24ff-4c9d-8fe1-20210c077073",
+    "clipgt-e7ddb7f0-1f6f-4076-9e02-7765abda065a",
+    "clipgt-b0947992-20f3-4355-903b-92fcddb84528",
+    "clipgt-3e18388c-aa5b-4152-99bd-f93e570bd2ff",
+    "clipgt-d4b54366-1289-4d6a-a788-f930e0f6a9a1",
+    "clipgt-5fcb2ba7-6a4b-4ce1-887b-8eafa677b4f0",
+    "clipgt-44e97708-8896-49ac-b046-cd489253bcfe",
+    "clipgt-2da7fb57-852c-43dd-b3fa-f64b88d49fe4",
+    "clipgt-15dd433e-ff56-47b5-82c4-ea91f8f7443f",
+    "clipgt-5c871a72-ca26-4e8a-9bca-0736260285ea",
+    "clipgt-fc9fde87-6b71-49ff-baad-2ac992e7e034",
+    "clipgt-7cd29a50-39b9-40d3-8ab5-d75a7efe7bc1",
+    "clipgt-875e79d9-194f-478a-a4ec-e130649bde17",
+    "clipgt-c0de5bb2-4c11-4348-8369-7d231699e7b3",
+    "clipgt-e4697882-aa65-4743-a00d-477e03ac066d",
+    "clipgt-7c05aee0-88f1-4338-a48b-5cbe24d5b888",
+    "clipgt-c8cab401-90c0-4e8c-809d-28d7411119de",
+    "clipgt-14a02b32-08ac-493f-b9b5-5367df0cc568",
+    "clipgt-cbe2d634-0e1d-47a8-9490-4e4c3391e45c",
+    "clipgt-626d4b3b-18ef-4de1-8b19-6c72f4e79e4e",
+    "clipgt-bd95eaad-1fd0-4a82-9331-05a06bcf9bc3",
+    "clipgt-4ce9f18b-d251-4bfc-a72d-58bac48fd525",
+    "clipgt-bba237df-1306-4130-bdf5-83d216ca71b9",
+    "clipgt-37113280-a033-4be4-afdd-cb199299e028",
+    "clipgt-51aee21d-dbab-40e8-8238-9b641a89244b",
+    "clipgt-c3c4f763-44da-450d-a6e2-48a982e62de4",
+    "clipgt-66820d2f-2cac-47c5-9bd2-1cf78128bd03",
+    "clipgt-23b03b84-fb88-445a-9a85-e19bad0a4986",
+    "clipgt-422c7297-849e-4d02-9ee7-c696f42d4b82",
+    "clipgt-48a48ad9-bc17-4543-a1b0-9e22fc02d8b6",
+    "clipgt-fad840eb-c6e8-4e96-a37c-f1061acb26d9",
+    "clipgt-eabf93a3-62e8-4302-b989-354e7422a644",
+    "clipgt-27a8bd68-4f4b-4dde-96a0-95b4de726dc2",
+    "clipgt-8701a102-a13a-440a-9988-6ba8a818bc7f",
+    "clipgt-f4f7e865-9c03-465b-8233-d4eba8f39ff4",
+    "clipgt-d7577d71-f18d-4baf-a0bf-f692930f197a",
+    "clipgt-c2df5259-0079-4ca8-904a-e3ae7667da27",
+    "clipgt-af431f7b-5777-4c7f-b23b-225ccdc56ba3"
+  ],
+  "artifacts": [
+    {
+      "uuid": "ac0ac70c-75c1-46b6-9646-c9801e7779b0",
+      "scene_id": "clipgt-9b6a51bd-cb54-4a68-8ed8-0e33a504c67e",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/9b6a51bd-cb54-4a68-8ed8-0e33a504c67e/9b6a51bd-cb54-4a68-8ed8-0e33a504c67e.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "7e4616e6-d94e-4897-a63e-5356b8c6150e",
+      "scene_id": "clipgt-1f816661-b271-479b-ab67-72057de1aadd",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/1f816661-b271-479b-ab67-72057de1aadd/1f816661-b271-479b-ab67-72057de1aadd.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "1824a729-b923-41ab-8745-dc04d0348f7a",
+      "scene_id": "clipgt-8588b919-8293-4708-a7cf-b911d05791a6",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/8588b919-8293-4708-a7cf-b911d05791a6/8588b919-8293-4708-a7cf-b911d05791a6.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "d668abcd-a72b-45db-b715-0dec30e73abe",
+      "scene_id": "clipgt-b27b3375-5028-44bc-bec7-64785793734a",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/b27b3375-5028-44bc-bec7-64785793734a/b27b3375-5028-44bc-bec7-64785793734a.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "22c4b3a7-4b04-4c9c-a4a8-a0362510591e",
+      "scene_id": "clipgt-11336325-e0c8-49ab-9f34-0be03dd1b8e2",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/11336325-e0c8-49ab-9f34-0be03dd1b8e2/11336325-e0c8-49ab-9f34-0be03dd1b8e2.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "5e386e57-372c-432b-9546-78a264fc4275",
+      "scene_id": "clipgt-404cc92f-193e-4948-b600-77ddc425dcf0",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/404cc92f-193e-4948-b600-77ddc425dcf0/404cc92f-193e-4948-b600-77ddc425dcf0.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "befeae31-2a92-4791-ae6c-5f5831325931",
+      "scene_id": "clipgt-eaf4352c-a194-4b09-a5a1-144c6a0d7dbc",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/eaf4352c-a194-4b09-a5a1-144c6a0d7dbc/eaf4352c-a194-4b09-a5a1-144c6a0d7dbc.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "bb16d04e-bf09-4ec1-8d91-05f1c0927cb3",
+      "scene_id": "clipgt-24db7eb4-eddf-4b20-ba7e-ca54f9b44f11",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/24db7eb4-eddf-4b20-ba7e-ca54f9b44f11/24db7eb4-eddf-4b20-ba7e-ca54f9b44f11.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "e0883d2d-ca74-44d4-98ec-048ff4be62d2",
+      "scene_id": "clipgt-8c129b2d-9aeb-484e-a926-695ea77c8429",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/8c129b2d-9aeb-484e-a926-695ea77c8429/8c129b2d-9aeb-484e-a926-695ea77c8429.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "a00b07b8-b31e-41e9-a5d0-ad46e9f7d5e9",
+      "scene_id": "clipgt-764c8a4a-bddc-4e3c-9df4-0941982efeba",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/764c8a4a-bddc-4e3c-9df4-0941982efeba/764c8a4a-bddc-4e3c-9df4-0941982efeba.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "f96665b4-2872-4eaa-87aa-3c1d6d72b5ff",
+      "scene_id": "clipgt-e39fb49b-8938-4a63-811e-1edff7d1065d",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/e39fb49b-8938-4a63-811e-1edff7d1065d/e39fb49b-8938-4a63-811e-1edff7d1065d.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "ad7c4bcd-4000-4eb0-94e5-945d6446b27f",
+      "scene_id": "clipgt-0e02fb8c-182a-41a6-a194-010bc7ef4f28",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/0e02fb8c-182a-41a6-a194-010bc7ef4f28/0e02fb8c-182a-41a6-a194-010bc7ef4f28.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "b23b97fe-0eb4-4c76-9a3d-adbdfd83cb70",
+      "scene_id": "clipgt-6a3927f1-777d-49c5-85ef-4c74537a03ae",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/6a3927f1-777d-49c5-85ef-4c74537a03ae/6a3927f1-777d-49c5-85ef-4c74537a03ae.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "3c0423c6-7705-4927-b260-292db5f3f207",
+      "scene_id": "clipgt-9a190a00-0303-4c11-8acf-9a5e6d1c4b71",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/9a190a00-0303-4c11-8acf-9a5e6d1c4b71/9a190a00-0303-4c11-8acf-9a5e6d1c4b71.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "f02d30a2-5569-49b2-a054-db5a00e44bb1",
+      "scene_id": "clipgt-fe0c2168-7da0-46b7-b29f-efb80b0a41dd",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/fe0c2168-7da0-46b7-b29f-efb80b0a41dd/fe0c2168-7da0-46b7-b29f-efb80b0a41dd.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "f45953ae-64f9-4375-ab9f-1ec5fd5c665d",
+      "scene_id": "clipgt-7dc59d0d-7582-48b2-a6f9-2d7288b2c556",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/7dc59d0d-7582-48b2-a6f9-2d7288b2c556/7dc59d0d-7582-48b2-a6f9-2d7288b2c556.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "fbe749c1-3bf6-40d5-a2fa-1b243485ec83",
+      "scene_id": "clipgt-f7bbceae-cc40-4fdb-9643-122c54f2c7b2",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/f7bbceae-cc40-4fdb-9643-122c54f2c7b2/f7bbceae-cc40-4fdb-9643-122c54f2c7b2.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "40806aa5-1f64-49da-9922-21dbda9f2c8e",
+      "scene_id": "clipgt-64c33c12-0bf2-4e64-a92c-e1129485566b",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/64c33c12-0bf2-4e64-a92c-e1129485566b/64c33c12-0bf2-4e64-a92c-e1129485566b.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "afd13d9d-3c79-4393-ad86-1ca098be8680",
+      "scene_id": "clipgt-11e62ffc-ebd9-448b-88ca-61796a5e5db6",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/11e62ffc-ebd9-448b-88ca-61796a5e5db6/11e62ffc-ebd9-448b-88ca-61796a5e5db6.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "3833f554-7e10-4873-a802-418789f9f178",
+      "scene_id": "clipgt-13fb89b9-2196-4545-abb4-c3029d89fcbe",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/13fb89b9-2196-4545-abb4-c3029d89fcbe/13fb89b9-2196-4545-abb4-c3029d89fcbe.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "fc6d4d9c-33a6-4b38-8c38-20703061e812",
+      "scene_id": "clipgt-bd08d260-83a3-46aa-8799-d3aa50fb0e20",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/bd08d260-83a3-46aa-8799-d3aa50fb0e20/bd08d260-83a3-46aa-8799-d3aa50fb0e20.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "f86978cc-c798-4301-97cf-b8796d094f46",
+      "scene_id": "clipgt-ae723017-f248-42f1-a480-4328524ce949",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/ae723017-f248-42f1-a480-4328524ce949/ae723017-f248-42f1-a480-4328524ce949.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "db52a348-2687-4f22-9b0f-d639746e2c9b",
+      "scene_id": "clipgt-a9e8dfc7-24ff-4c9d-8fe1-20210c077073",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/a9e8dfc7-24ff-4c9d-8fe1-20210c077073/a9e8dfc7-24ff-4c9d-8fe1-20210c077073.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "fb03d11b-36c0-4156-8dc4-9ccb03b73054",
+      "scene_id": "clipgt-e7ddb7f0-1f6f-4076-9e02-7765abda065a",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/e7ddb7f0-1f6f-4076-9e02-7765abda065a/e7ddb7f0-1f6f-4076-9e02-7765abda065a.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "bcee9000-c2a8-491a-83ce-ab9675802a83",
+      "scene_id": "clipgt-b0947992-20f3-4355-903b-92fcddb84528",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/b0947992-20f3-4355-903b-92fcddb84528/b0947992-20f3-4355-903b-92fcddb84528.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "421c77b3-a778-4652-9293-a70ca94473ac",
+      "scene_id": "clipgt-3e18388c-aa5b-4152-99bd-f93e570bd2ff",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/3e18388c-aa5b-4152-99bd-f93e570bd2ff/3e18388c-aa5b-4152-99bd-f93e570bd2ff.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "c41ecde6-2786-4c37-812a-096d442507ff",
+      "scene_id": "clipgt-d4b54366-1289-4d6a-a788-f930e0f6a9a1",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/d4b54366-1289-4d6a-a788-f930e0f6a9a1/d4b54366-1289-4d6a-a788-f930e0f6a9a1.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "1b3ec2be-6261-4483-92a2-c1b692d85b95",
+      "scene_id": "clipgt-5fcb2ba7-6a4b-4ce1-887b-8eafa677b4f0",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/5fcb2ba7-6a4b-4ce1-887b-8eafa677b4f0/5fcb2ba7-6a4b-4ce1-887b-8eafa677b4f0.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "d96ddb8a-ea91-4460-b473-941e81f43a0d",
+      "scene_id": "clipgt-44e97708-8896-49ac-b046-cd489253bcfe",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/44e97708-8896-49ac-b046-cd489253bcfe/44e97708-8896-49ac-b046-cd489253bcfe.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "d1194916-b936-41d7-a2f2-7807076ff982",
+      "scene_id": "clipgt-2da7fb57-852c-43dd-b3fa-f64b88d49fe4",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/2da7fb57-852c-43dd-b3fa-f64b88d49fe4/2da7fb57-852c-43dd-b3fa-f64b88d49fe4.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "e8402a08-0e00-42d0-8f39-b953f26ee3aa",
+      "scene_id": "clipgt-15dd433e-ff56-47b5-82c4-ea91f8f7443f",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/15dd433e-ff56-47b5-82c4-ea91f8f7443f/15dd433e-ff56-47b5-82c4-ea91f8f7443f.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "500b116a-2f67-4df2-a54d-bab46d3c7862",
+      "scene_id": "clipgt-5c871a72-ca26-4e8a-9bca-0736260285ea",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/5c871a72-ca26-4e8a-9bca-0736260285ea/5c871a72-ca26-4e8a-9bca-0736260285ea.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "f118b15a-f374-46d6-b953-1d4a062d07b3",
+      "scene_id": "clipgt-fc9fde87-6b71-49ff-baad-2ac992e7e034",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/fc9fde87-6b71-49ff-baad-2ac992e7e034/fc9fde87-6b71-49ff-baad-2ac992e7e034.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "4e1123ea-7f16-4c00-9452-1e818978506d",
+      "scene_id": "clipgt-7cd29a50-39b9-40d3-8ab5-d75a7efe7bc1",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/7cd29a50-39b9-40d3-8ab5-d75a7efe7bc1/7cd29a50-39b9-40d3-8ab5-d75a7efe7bc1.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "fd8045a5-bc50-4092-902e-53a7f8aead47",
+      "scene_id": "clipgt-875e79d9-194f-478a-a4ec-e130649bde17",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/875e79d9-194f-478a-a4ec-e130649bde17/875e79d9-194f-478a-a4ec-e130649bde17.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "25b34091-4266-4a46-8e88-9653011daeea",
+      "scene_id": "clipgt-c0de5bb2-4c11-4348-8369-7d231699e7b3",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/c0de5bb2-4c11-4348-8369-7d231699e7b3/c0de5bb2-4c11-4348-8369-7d231699e7b3.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "a4321caa-3281-4638-8ebe-4ae4786f7121",
+      "scene_id": "clipgt-e4697882-aa65-4743-a00d-477e03ac066d",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/e4697882-aa65-4743-a00d-477e03ac066d/e4697882-aa65-4743-a00d-477e03ac066d.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "b8ab96b2-84ad-4208-85bf-9eed73044dd4",
+      "scene_id": "clipgt-7c05aee0-88f1-4338-a48b-5cbe24d5b888",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/7c05aee0-88f1-4338-a48b-5cbe24d5b888/7c05aee0-88f1-4338-a48b-5cbe24d5b888.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "2f596a7b-a0e6-4ada-99b1-1d96a63b4930",
+      "scene_id": "clipgt-c8cab401-90c0-4e8c-809d-28d7411119de",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/c8cab401-90c0-4e8c-809d-28d7411119de/c8cab401-90c0-4e8c-809d-28d7411119de.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "e0de9026-4be1-4fee-9d29-1113ba3196eb",
+      "scene_id": "clipgt-14a02b32-08ac-493f-b9b5-5367df0cc568",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/14a02b32-08ac-493f-b9b5-5367df0cc568/14a02b32-08ac-493f-b9b5-5367df0cc568.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "97645fb9-d27f-437d-8283-486626fce9ca",
+      "scene_id": "clipgt-cbe2d634-0e1d-47a8-9490-4e4c3391e45c",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/cbe2d634-0e1d-47a8-9490-4e4c3391e45c/cbe2d634-0e1d-47a8-9490-4e4c3391e45c.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "4216da23-569f-4882-87de-84d3cb6a7cf7",
+      "scene_id": "clipgt-626d4b3b-18ef-4de1-8b19-6c72f4e79e4e",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/626d4b3b-18ef-4de1-8b19-6c72f4e79e4e/626d4b3b-18ef-4de1-8b19-6c72f4e79e4e.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "5d900e61-4df8-4505-97b1-4421a7ff73ed",
+      "scene_id": "clipgt-bd95eaad-1fd0-4a82-9331-05a06bcf9bc3",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/bd95eaad-1fd0-4a82-9331-05a06bcf9bc3/bd95eaad-1fd0-4a82-9331-05a06bcf9bc3.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "5e0fbd5a-89f0-4558-8b97-5da1374c4216",
+      "scene_id": "clipgt-4ce9f18b-d251-4bfc-a72d-58bac48fd525",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/4ce9f18b-d251-4bfc-a72d-58bac48fd525/4ce9f18b-d251-4bfc-a72d-58bac48fd525.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "5295e73b-d57e-4abc-8a51-80237abe2d15",
+      "scene_id": "clipgt-bba237df-1306-4130-bdf5-83d216ca71b9",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/bba237df-1306-4130-bdf5-83d216ca71b9/bba237df-1306-4130-bdf5-83d216ca71b9.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "af730cf3-493b-4411-9eb6-23a2e84e9893",
+      "scene_id": "clipgt-37113280-a033-4be4-afdd-cb199299e028",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/37113280-a033-4be4-afdd-cb199299e028/37113280-a033-4be4-afdd-cb199299e028.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "c4fed9a8-40ef-4807-942d-e131db8823e3",
+      "scene_id": "clipgt-51aee21d-dbab-40e8-8238-9b641a89244b",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/51aee21d-dbab-40e8-8238-9b641a89244b/51aee21d-dbab-40e8-8238-9b641a89244b.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "60a0e010-803d-46e4-9092-03c17a4ae64f",
+      "scene_id": "clipgt-c3c4f763-44da-450d-a6e2-48a982e62de4",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/c3c4f763-44da-450d-a6e2-48a982e62de4/c3c4f763-44da-450d-a6e2-48a982e62de4.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "8063c381-e1b5-47d3-9156-77af153f584a",
+      "scene_id": "clipgt-66820d2f-2cac-47c5-9bd2-1cf78128bd03",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/66820d2f-2cac-47c5-9bd2-1cf78128bd03/66820d2f-2cac-47c5-9bd2-1cf78128bd03.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "f3ed83b9-f571-4288-a7c4-b2864ba3d718",
+      "scene_id": "clipgt-23b03b84-fb88-445a-9a85-e19bad0a4986",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/23b03b84-fb88-445a-9a85-e19bad0a4986/23b03b84-fb88-445a-9a85-e19bad0a4986.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "77ac1776-5339-4b71-952a-c71f566ac1b3",
+      "scene_id": "clipgt-422c7297-849e-4d02-9ee7-c696f42d4b82",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/422c7297-849e-4d02-9ee7-c696f42d4b82/422c7297-849e-4d02-9ee7-c696f42d4b82.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "d1d78538-fd3d-49aa-811b-7743579a7aff",
+      "scene_id": "clipgt-48a48ad9-bc17-4543-a1b0-9e22fc02d8b6",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/48a48ad9-bc17-4543-a1b0-9e22fc02d8b6/48a48ad9-bc17-4543-a1b0-9e22fc02d8b6.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "ea8dcd69-9494-43af-b157-dfe79d04f78f",
+      "scene_id": "clipgt-fad840eb-c6e8-4e96-a37c-f1061acb26d9",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/fad840eb-c6e8-4e96-a37c-f1061acb26d9/fad840eb-c6e8-4e96-a37c-f1061acb26d9.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "a8f43656-028c-4817-8490-86c9e431ad39",
+      "scene_id": "clipgt-eabf93a3-62e8-4302-b989-354e7422a644",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/eabf93a3-62e8-4302-b989-354e7422a644/eabf93a3-62e8-4302-b989-354e7422a644.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "d3b857c7-1ee9-4181-b58f-73e97d3c4916",
+      "scene_id": "clipgt-27a8bd68-4f4b-4dde-96a0-95b4de726dc2",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/27a8bd68-4f4b-4dde-96a0-95b4de726dc2/27a8bd68-4f4b-4dde-96a0-95b4de726dc2.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "044ab934-77c5-46ed-a642-0b3c53dd836e",
+      "scene_id": "clipgt-8701a102-a13a-440a-9988-6ba8a818bc7f",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/8701a102-a13a-440a-9988-6ba8a818bc7f/8701a102-a13a-440a-9988-6ba8a818bc7f.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "de6dc427-5e3d-4cbb-a7eb-824804a6b5b9",
+      "scene_id": "clipgt-f4f7e865-9c03-465b-8233-d4eba8f39ff4",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/f4f7e865-9c03-465b-8233-d4eba8f39ff4/f4f7e865-9c03-465b-8233-d4eba8f39ff4.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "d750e7a2-281e-47d2-a763-84c0eac5d5c9",
+      "scene_id": "clipgt-d7577d71-f18d-4baf-a0bf-f692930f197a",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/d7577d71-f18d-4baf-a0bf-f692930f197a/d7577d71-f18d-4baf-a0bf-f692930f197a.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "c6fa5889-7732-4b41-9234-b6977fb3c6dc",
+      "scene_id": "clipgt-c2df5259-0079-4ca8-904a-e3ae7667da27",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/c2df5259-0079-4ca8-904a-e3ae7667da27/c2df5259-0079-4ca8-904a-e3ae7667da27.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    },
+    {
+      "uuid": "cb7a85af-bf02-4b9d-a5ed-28905a520f89",
+      "scene_id": "clipgt-af431f7b-5777-4c7f-b23b-225ccdc56ba3",
+      "nre_version_string": "26.1.112-59673f88",
+      "path": "sample_set/26.01_release/af431f7b-5777-4c7f-b23b-225ccdc56ba3/af431f7b-5777-4c7f-b23b-225ccdc56ba3.usdz",
+      "last_modified": "2026-03-16 22:00:27",
+      "artifact_repository": "huggingface",
+      "hf_revision": "26.01"
+    }
+  ],
+  "overlap_checks": {
+    "train": 0,
+    "val": 0,
+    "official": 0,
+    "previous_closedloop": 0,
+    "new32": 0
+  }
+}

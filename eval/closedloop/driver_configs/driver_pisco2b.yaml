@@ -1,0 +1,26 @@
+# AlpaSim driver config for Pisco-2B (eager PyTorch rollout, bf16, 4 cameras x 4 frames, 1 path, no navigation).
+# Checkpoint directory = local download of the Hugging Face repo (hf download <user>/Pisco-2B --local-dir ...).
+log_level: INFO
+model:
+  model_type: pisco
+  checkpoint_path: /models/Pisco-2B
+  device: cuda
+  use_classifier_free_guidance_nav: false
+  compiled_runtime: false
+host: 0.0.0.0
+port: ???
+inference:
+  use_cameras:
+    - camera_cross_left_120fov
+    - camera_front_wide_120fov
+    - camera_cross_right_120fov
+    - camera_front_tele_30fov
+  max_batch_size: 1
+  subsample_factor: 1
+  context_length: 4
+route:
+  use_waypoint_commands: false
+output_dir: /tmp/pisco_driver/pisco2b
+trajectory_optimizer:
+  enabled: false
+plot_debug_images: false

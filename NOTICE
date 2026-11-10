@@ -1,0 +1,23 @@
+Pisco
+Copyright 2026 the Pisco authors
+
+The code in this repository is licensed under the Apache License, Version 2.0 (see LICENSE).
+The Pisco model weights are NOT part of this repository; they are distributed separately on Hugging Face
+under the NVIDIA Open Model License (see the model repositories).
+
+Third-party components and attribution
+--------------------------------------
+* Qwen3-VL (Qwen team, Alibaba Cloud), Apache License 2.0. The model architecture and the tokenizer/processor
+  files bundled with the checkpoints derive from Qwen3-VL.
+* NVIDIA Alpamayo 1.5 inference code (https://github.com/NVlabs/alpamayo1.5), Apache License 2.0. Pisco imports it
+  as a dependency (model classes, flow-matching sampler, action space, prompt helper) and does not copy it.
+  The Alpamayo-1.5-10B model weights (the Teacher) are released by NVIDIA under the OpenMDW License Agreement,
+  version 1.1 (OpenMDW-1.1); the Pisco action expert was initialised from the Teacher's expert layers.
+* NVIDIA Cosmos-Reason2-2B (backbone initialisation) is released by NVIDIA under the NVIDIA Open Model License.
+  Licensed by NVIDIA Corporation under the NVIDIA Open Model License.
+  Built on NVIDIA Cosmos.
+* NVIDIA AlpaSim (https://github.com/NVlabs/alpasim), Apache License 2.0: closed-loop simulator used by eval/closedloop.
+* NVIDIA PhysicalAI-Autonomous-Vehicles dataset: used under the NVIDIA Autonomous Vehicle Dataset License
+  Agreement. No dataset content is redistributed here; clip-ID manifests only.
+* DART vision-token selection (pisco/dart.py) follows the embedding-level DART pruning of NVIDIA TensorRT-Edge-LLM
+  (DartPruner), re-implemented in PyTorch.

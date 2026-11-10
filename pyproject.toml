@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pisco"
+version = "0.1.0"
+description = "Pisco: Distilling Alpamayo 1.5 (10B) into a 2B VLA"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10"
+dependencies = [
+  "torch>=2.6",
+  "transformers==4.57.1",
+  "accelerate",
+  "einops",
+  "numpy",
+  "pandas",
+  "pyarrow",
+  "huggingface_hub",
+  "hydra-core",
+  "physical_ai_av",
+  "alpamayo1_5 @ git+https://github.com/NVlabs/alpamayo1.5.git",
+]
+
+[project.optional-dependencies]
+alpasim = ["alpasim_driver"]
+
+[tool.setuptools]
+packages = ["pisco"]

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pisco_alpasim"
+version = "0.1.0"
+description = "AlpaSim driver plugin: registers the Pisco 2B VLA as model_type 'pisco'"
+requires-python = ">=3.10"
+dependencies = ["pisco"]
+
+[project.entry-points."alpasim.models"]
+pisco = "pisco_alpasim.model:PiscoDriverModel"
+
+[tool.setuptools]
+packages = ["pisco_alpasim"]
