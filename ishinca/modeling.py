@@ -1,4 +1,4 @@
-"""Pisco model: Alpamayo 1.5 architecture (Qwen3-VL-2B backbone + AE28 action expert) with the student tokenizer.
+"""Ishinca model: Alpamayo 1.5 architecture (Qwen3-VL-2B backbone + AE28 action expert) with the student tokenizer.
 
 Everything except the tokenizer and the optional DART rollout is inherited from NVIDIA's
 ``alpamayo1_5`` package (VLM/expert construction, weight loading, trajectory tokens, flow matching,
@@ -21,7 +21,7 @@ from alpamayo1_5.models.base_model import TRAJ_TOKEN
 from alpamayo1_5.models.token_utils import extract_text_tokens
 from transformers import AutoProcessor, DynamicCache
 
-from pisco.dart import dart_keep as select_dart_tokens
+from ishinca.dart import dart_keep as select_dart_tokens
 
 logger = logging.getLogger(__name__)
 
@@ -35,16 +35,16 @@ def load_student_tokenizer(vlm_name_or_path: str, min_pixels: int | None, max_pi
     return tokenizer
 
 
-class PiscoConfig(Alpamayo1_5Config):
+class IshincaConfig(Alpamayo1_5Config):
     """Alpamayo 1.5 config that reads vocabulary metadata from the student tokenizer.
 
-    ``pisco_dart_keep`` (optional, in config.json) is the DART keep fraction of the checkpoint
-    (0.5 / 0.75 for the DART variants, absent for Pisco-4B).
+    ``ishinca_dart_keep`` (optional, in config.json) is the DART keep fraction of the checkpoint
+    (0.5 / 0.75 for the DART variants, absent for Ishinca-4B).
     """
 
-    def __init__(self, pisco_dart_keep: float | None = None, **kwargs: Any) -> None:
+    def __init__(self, ishinca_dart_keep: float | None = None, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.pisco_dart_keep = pisco_dart_keep
+        self.ishinca_dart_keep = ishinca_dart_keep
 
     def _initialize_vlm_config(self) -> None:
         if self.vlm_name_or_path is None:
@@ -72,7 +72,7 @@ class _LinearPatchProj(torch.nn.Module):
         return torch.nn.functional.linear(x.flatten(1), self.weight, self.bias)
 
 
-def use_linear_patch_embed(model: "PiscoModel") -> None:
+def use_linear_patch_embed(model: "IshincaModel") -> None:
     embed = model.vlm.model.visual.patch_embed
     if isinstance(embed.proj, torch.nn.Conv3d):
         embed.proj = _LinearPatchProj(embed.proj)
@@ -89,12 +89,12 @@ def _top_p_sample(logits: torch.Tensor, temperature: float, top_p: float) -> tor
     return torch.multinomial(logits.softmax(-1), 1)
 
 
-class PiscoModel(Alpamayo1_5):
-    config_class = PiscoConfig
+class IshincaModel(Alpamayo1_5):
+    config_class = IshincaConfig
 
-    dart_keep: float | None = None  # set by load_pisco / set_dart
+    dart_keep: float | None = None  # set by load_ishinca / set_dart
 
-    def _build_tokenizer(self, config: PiscoConfig) -> Any:
+    def _build_tokenizer(self, config: IshincaConfig) -> Any:
         return load_student_tokenizer(config.vlm_name_or_path, config.min_pixels, config.max_pixels)
 
     def set_dart(self, keep_frac: float | None) -> None:
@@ -113,18 +113,18 @@ class PiscoModel(Alpamayo1_5):
         max_generation_length: int = 256,
         diffusion_kwargs: dict[str, Any] | None = None,
         noise_seed: int | None = None,
-        force_pisco_rollout: bool = False,
+        force_ishinca_rollout: bool = False,
         return_extra: bool = False,
         **kwargs: Any,
     ):
         """Same contract as the upstream method (returns ``pred_xyz, pred_rot[, extra]``).
 
         Without DART this calls the upstream implementation (HF ``generate``), unless
-        ``force_pisco_rollout`` is set. With DART, or when forced, the explicit rollout below is used;
+        ``force_ishinca_rollout`` is set. With DART, or when forced, the explicit rollout below is used;
         it draws ``num_traj_samples`` independent samples sequentially.
         ``noise_seed`` re-seeds the RNG right before the flow-matching sampler draws x0 (same-x0 protocol).
         """
-        if self.dart_keep is None and not force_pisco_rollout:
+        if self.dart_keep is None and not force_ishinca_rollout:
             if noise_seed is not None:
                 self._seed_diffusion_noise(noise_seed)
             try:

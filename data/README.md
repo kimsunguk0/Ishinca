@@ -1,6 +1,6 @@
 # Data: PhysicalAI-Autonomous-Vehicles
 
-No data is shipped in this repository. Pisco evaluates on clips of
+No data is shipped in this repository. Ishinca evaluates on clips of
 [`nvidia/PhysicalAI-Autonomous-Vehicles`](https://huggingface.co/datasets/nvidia/PhysicalAI-Autonomous-Vehicles)
 (gated; accept the NVIDIA Autonomous Vehicle Dataset License Agreement and log in with `hf auth login`).
 
@@ -28,7 +28,7 @@ Source files in the dataset repository: `labels/egomotion/egomotion.chunk_XXXX.z
 `camera/<camera_name>/<camera_name>.chunk_XXXX.zip` (chunk index from `clip_index.parquet`). `eval/openloop/fetch_clips.py`
 does the range-read + repack for a list of clip IDs (about 60 MB per clip).
 
-Pisco reads only: the 4 cameras above (camera indices 0, 1, 2, 6), 4 frames per camera at t0-0.3 s .. t0 (10 Hz),
+Ishinca reads only: the 4 cameras above (camera indices 0, 1, 2, 6), 4 frames per camera at t0-0.3 s .. t0 (10 Hz),
 16 ego poses ending at t0, and for evaluation 64 future poses (0.1 s steps). Default t0 = 5.1 s.
 
 ## Manifests

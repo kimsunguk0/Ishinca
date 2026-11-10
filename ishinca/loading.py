@@ -7,9 +7,9 @@ from pathlib import Path
 
 import torch
 
-from pisco.modeling import PiscoConfig, PiscoModel, use_linear_patch_embed
+from ishinca.modeling import IshincaConfig, IshincaModel, use_linear_patch_embed
 
-# A Pisco checkpoint directory contains: config.json (vlm_name_or_path = "./backbone"), model.safetensors
+# A Ishinca checkpoint directory contains: config.json (vlm_name_or_path = "./backbone"), model.safetensors
 # (full model: VLM + AE28), and backbone/ (tokenizer + processor + backbone config.json; NO backbone weights,
 # the VLM weights are inside model.safetensors).
 
@@ -23,7 +23,7 @@ def resolve_checkpoint(path_or_id: str, revision: str | None = None) -> Path:
     return Path(snapshot_download(path_or_id, revision=revision))
 
 
-def load_pisco(
+def load_ishinca(
     path_or_id: str,
     device: str | torch.device = "cuda",
     dtype: torch.dtype = torch.bfloat16,
@@ -31,12 +31,12 @@ def load_pisco(
     attn_implementation: str = "sdpa",
     revision: str | None = None,
     linear_patch_embed: bool = True,
-) -> PiscoModel:
-    """Load a Pisco checkpoint.
+) -> IshincaModel:
+    """Load a Ishinca checkpoint.
 
     Args:
-        path_or_id: local directory or HF repo id (e.g. ``suukim/Pisco-4B``).
-        dart_keep: DART keep fraction. ``"config"`` (default) uses ``pisco_dart_keep`` from config.json
+        path_or_id: local directory or HF repo id (e.g. ``suukim/Ishinca-4B``).
+        dart_keep: DART keep fraction. ``"config"`` (default) uses ``ishinca_dart_keep`` from config.json
             (set for the DART variants), ``None`` disables DART.
         linear_patch_embed: run the vision patch-embedding Conv3d as an equivalent matmul (same math; avoids a very
             slow cuDNN Conv3d path seen on RTX 5090 / aarch64). Set False for the stock Conv3d.
@@ -45,10 +45,10 @@ def load_pisco(
     cfg_dict = json.loads((root / "config.json").read_text())
     cfg_dict["vlm_name_or_path"] = str((root / cfg_dict.get("vlm_name_or_path", "./backbone")).resolve())
     cfg_dict["attn_implementation"] = attn_implementation
-    config = PiscoConfig(**cfg_dict)
-    model = PiscoModel.from_pretrained(root, config=config, dtype=dtype, attn_implementation=attn_implementation)
+    config = IshincaConfig(**cfg_dict)
+    model = IshincaModel.from_pretrained(root, config=config, dtype=dtype, attn_implementation=attn_implementation)
     model = model.to(device).eval().requires_grad_(False)
     if linear_patch_embed:
         use_linear_patch_embed(model)
-    model.set_dart(config.pisco_dart_keep if dart_keep == "config" else dart_keep)
+    model.set_dart(config.ishinca_dart_keep if dart_keep == "config" else dart_keep)
     return model

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Open-loop evaluation of a Pisco checkpoint (gold644-style protocol, see PROTOCOL.md).
+"""Open-loop evaluation of a Ishinca checkpoint (gold644-style protocol, see PROTOCOL.md).
 
-  python eval/openloop/run_openloop.py --checkpoint ./Pisco-4B --data-root /data/clips \
-      --manifest eval/openloop/manifests/gold644_clip_ids.txt --out runs/pisco4b_gold644
+  python eval/openloop/run_openloop.py --checkpoint ./Ishinca-4B --data-root /data/clips \
+      --manifest eval/openloop/manifests/gold644_clip_ids.txt --out runs/ishinca4b_gold644
 
 Per clip: t0 = 5.1 s, 4 cameras x 4 frames, 16-step history, no navigation input. Two independent calls:
 rollout=1 (ADE/FDE) and rollout=6 (minADE6). Sampling T=0.6, top_p=0.98, bf16 autocast, torch seed reset to
@@ -18,9 +18,9 @@ import numpy as np
 import torch
 
 from metrics import clip_metrics
-from pisco import build_model_inputs, load_pisco
-from pisco.data import load_clip
-from pisco.inputs import get_processor
+from ishinca import build_model_inputs, load_ishinca
+from ishinca.data import load_clip
+from ishinca.inputs import get_processor
 
 
 def main() -> None:
@@ -43,7 +43,7 @@ def main() -> None:
     a.out.mkdir(parents=True, exist_ok=True)
     (a.out / "paths").mkdir(exist_ok=True)
     dart = None if a.no_dart else (a.dart_keep if a.dart_keep is not None else "config")
-    model = load_pisco(a.checkpoint, device=a.device, dart_keep=dart)
+    model = load_ishinca(a.checkpoint, device=a.device, dart_keep=dart)
     processor = get_processor(model)
     rows, skipped = [], 0
     with (a.out / "results.jsonl").open("w", buffering=1) as f:

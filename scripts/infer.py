@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Pisco inference: 4 cameras x 4 frames + 16-step ego history -> Chain-of-Causation text + 6.4 s trajectory.
+"""Ishinca inference: 4 cameras x 4 frames + 16-step ego history -> Chain-of-Causation text + 6.4 s trajectory.
 
 Examples:
   # a PhysicalAI-AV clip from the official dataset (needs HF access to the gated dataset)
-  python scripts/infer.py --checkpoint suukim/Pisco-4B --clip-id 030c760c-ae38-49aa-9ad8-f5650a545d26
+  python scripts/infer.py --checkpoint suukim/Ishinca-4B --clip-id 030c760c-ae38-49aa-9ad8-f5650a545d26
 
   # local per-clip zips (data/README.md), DART variant, deterministic seed
-  python scripts/infer.py --checkpoint ./Pisco-4B-DART50 --data-root /data/clips --clip-id <uuid> --seed 42
+  python scripts/infer.py --checkpoint ./Ishinca-4B-DART50 --data-root /data/clips --clip-id <uuid> --seed 42
 
   # replay exactly the same decoded pixels on another machine
-  python scripts/infer.py --checkpoint ./Pisco-4B --inputs-npz inputs.npz --seed 42
+  python scripts/infer.py --checkpoint ./Ishinca-4B --inputs-npz inputs.npz --seed 42
 """
 
 import argparse
@@ -20,9 +20,9 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from pisco import build_model_inputs, load_pisco
-from pisco.data import load_clip, load_inputs, save_inputs
-from pisco.inputs import get_processor
+from ishinca import build_model_inputs, load_ishinca
+from ishinca.data import load_clip, load_inputs, save_inputs
+from ishinca.inputs import get_processor
 
 
 def main() -> None:
@@ -39,15 +39,15 @@ def main() -> None:
     ap.add_argument("--max-new-tokens", type=int, default=256)
     ap.add_argument("--dart-keep", type=float, default=None, help="override DART keep fraction (default: from config)")
     ap.add_argument("--no-dart", action="store_true", help="disable DART even if the checkpoint config sets it")
-    ap.add_argument("--pisco-rollout", action="store_true", help="use the explicit rollout even without DART")
+    ap.add_argument("--ishinca-rollout", action="store_true", help="use the explicit rollout even without DART")
     ap.add_argument("--device", default="cuda")
-    ap.add_argument("--out", type=Path, default=Path("pisco_out.json"))
+    ap.add_argument("--out", type=Path, default=Path("ishinca_out.json"))
     ap.add_argument("--save-inputs", type=Path)
     a = ap.parse_args()
 
     dart = None if a.no_dart else (a.dart_keep if a.dart_keep is not None else "config")
     t = time.time()
-    model = load_pisco(a.checkpoint, device=a.device, dart_keep=dart)
+    model = load_ishinca(a.checkpoint, device=a.device, dart_keep=dart)
     processor = get_processor(model)
     t_load = time.time() - t
 
@@ -66,7 +66,7 @@ def main() -> None:
             return model.sample_trajectories_from_data_with_vlm_rollout(
                 data=inputs, top_p=a.top_p, temperature=a.temperature, num_traj_samples=1,
                 max_generation_length=a.max_new_tokens, noise_seed=a.seed,
-                force_pisco_rollout=a.pisco_rollout, return_extra=True,
+                force_ishinca_rollout=a.ishinca_rollout, return_extra=True,
             )
 
     run()  # warm-up (kernel selection); same seed -> same output

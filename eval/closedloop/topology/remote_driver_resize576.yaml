@@ -1,7 +1,7 @@
 # @package _global_
 # AlpaSim wizard topology used for the 150-scene closed-loop runs (copy into src/wizard/configs/topology/).
-# Renderer / physics / trafficsim / controller / runtime run on the simulation GPU host; the Pisco driver runs on a
-# separate GPU host and is reached over gRPC (renderer alone peaks at ~18 GB on a 24 GB card, so a 2B driver
+# Renderer / physics / trafficsim / controller / runtime run on the simulation GPU host; the Ishinca driver runs on a
+# separate GPU host and is reached over gRPC (renderer alone peaks at ~18 GB on a 24 GB card, so a 4B driver
 # does not fit next to it). One rollout at a time through the driver.
 # Point wizard.external_services.driver at the driver host, e.g.  wizard.external_services.driver=[<DRIVER_HOST>:6789]
 #

@@ -3,7 +3,7 @@
 import numpy as np
 import torch
 
-from pisco.dart import dart_keep, quota
+from ishinca.dart import dart_keep, quota
 
 
 def _toy(n_img=3, tok=180, d=32, n_text=10, seed=0):

@@ -1,6 +1,6 @@
 """Open-loop metric definitions (XY, 64 future waypoints at 10 Hz = 6.4 s).
 
-Only these metrics are reported for Pisco; never a 6-path mean or a min-of-5.
+Only these metrics are reported for Ishinca; never a 6-path mean or a min-of-5.
 
 * ADE      : mean over the 64 waypoints of the XY distance between ONE independently generated path
              (a separate rollout=1 call) and the reference.

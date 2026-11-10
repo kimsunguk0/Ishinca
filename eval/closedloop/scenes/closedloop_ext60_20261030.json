@@ -1,7 +1,7 @@
 {
-  "author": "Pisco authors",
+  "author": "Ishinca authors",
   "created": "2026-10-30",
-  "purpose": "Extend the closed-loop set to 150 scenes (holdout58 + new32 + ext60) for DART-75 / DART-50 vs Pisco-4B",
+  "purpose": "Extend the closed-loop set to 150 scenes (holdout58 + new32 + ext60) for DART-75 / DART-50 vs Ishinca-4B",
   "status": "frozen_before_download_or_inference",
   "training_use_forbidden": true,
   "selection": "Eligible scenes 33..92 in the new32 SHA256(seed + scene_id) order (the 60 after new32); independent of predictions and outcomes",

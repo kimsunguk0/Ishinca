@@ -1,4 +1,4 @@
-"""DART vision-token selection used by the Pisco-4B-DART variants.
+"""DART vision-token selection used by the Ishinca-4B-DART variants.
 
 Port of the selection the DART Students were trained and evaluated with (NVIDIA DartPruner
 semantics): per image, keep a fixed quota (``ceil(keep * n_tokens)``) of the merged image tokens.

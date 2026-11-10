@@ -1,8 +1,8 @@
-"""GPU integration test (skipped unless PISCO_CKPT and PISCO_INPUTS_NPZ are set).
+"""GPU integration test (skipped unless ISHINCA_CKPT and ISHINCA_INPUTS_NPZ are set).
 
-  PISCO_CKPT=./Pisco-4B PISCO_INPUTS_NPZ=inputs.npz python -m pytest tests/test_rollout_parity.py
+  ISHINCA_CKPT=./Ishinca-4B ISHINCA_INPUTS_NPZ=inputs.npz python -m pytest tests/test_rollout_parity.py
 
-Checks on one clip: (1) the explicit Pisco rollout equals the upstream HF-generate path, (2) DART keep=1.0 equals no DART.
+Checks on one clip: (1) the explicit Ishinca rollout equals the upstream HF-generate path, (2) DART keep=1.0 equals no DART.
 """
 
 import os
@@ -11,17 +11,17 @@ import numpy as np
 import pytest
 import torch
 
-CKPT, NPZ = os.environ.get("PISCO_CKPT"), os.environ.get("PISCO_INPUTS_NPZ")
+CKPT, NPZ = os.environ.get("ISHINCA_CKPT"), os.environ.get("ISHINCA_INPUTS_NPZ")
 pytestmark = pytest.mark.skipif(not (CKPT and NPZ and torch.cuda.is_available()), reason="needs checkpoint, inputs, GPU")
 
 
 @pytest.fixture(scope="module")
 def setup():
-    from pisco import build_model_inputs, load_pisco
-    from pisco.data import load_inputs
-    from pisco.inputs import get_processor
+    from ishinca import build_model_inputs, load_ishinca
+    from ishinca.data import load_inputs
+    from ishinca.inputs import get_processor
 
-    model = load_pisco(CKPT, dart_keep=None)
+    model = load_ishinca(CKPT, dart_keep=None)
     d = load_inputs(NPZ)
     inputs = build_model_inputs(model, get_processor(model), d["image_frames"], d["camera_indices"],
                                 d["ego_history_xyz"], d["ego_history_rot"])
@@ -39,7 +39,7 @@ def _run(model, inputs, **kw):
 def test_rollout_matches_upstream(setup):
     model, inputs = setup
     model.set_dart(None)
-    (a, ca), (b, cb) = _run(model, inputs), _run(model, inputs, force_pisco_rollout=True)
+    (a, ca), (b, cb) = _run(model, inputs), _run(model, inputs, force_ishinca_rollout=True)
     assert ca == cb
     assert np.abs(a - b).max() < 1e-3
 
@@ -47,7 +47,7 @@ def test_rollout_matches_upstream(setup):
 def test_dart_keep_all_is_identity(setup):
     model, inputs = setup
     model.set_dart(None)
-    a, ca = _run(model, inputs, force_pisco_rollout=True)
+    a, ca = _run(model, inputs, force_ishinca_rollout=True)
     model.set_dart(1.0)
     try:
         b, cb = _run(model, inputs)

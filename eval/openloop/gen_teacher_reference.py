@@ -17,7 +17,7 @@ import torch
 from alpamayo1_5 import helper
 from alpamayo1_5.models.alpamayo1_5 import Alpamayo1_5
 
-from pisco.data import load_clip
+from ishinca.data import load_clip
 
 
 def main() -> None:

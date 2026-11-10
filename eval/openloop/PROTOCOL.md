@@ -19,7 +19,7 @@ Metrics: ADE, FDE, minADE6@6.4 s, reported against the recorded ground truth ("v
 * Two independent calls per clip: rollout = 1 (ADE, FDE) and rollout = 6 (minADE6, min over the six per-path ADEs).
   T = 0.6, top_p = 0.98, no top-k, `torch` seed reset to 42 before every call, bf16 autocast, batch 1, AE flow matching
   Euler 10 steps, max 256 generated tokens.
-* DART variants run with their keep fraction (0.75 / 0.5); evaluating a DART checkpoint without pruning, or Pisco-4B with
+* DART variants run with their keep fraction (0.75 / 0.5); evaluating a DART checkpoint without pruning, or Ishinca-4B with
   pruning, is not the evaluated configuration.
 
 `run_openloop.py` implements this. The Teacher reference numbers in `manifests/gold644_teacher10b_reference.jsonl` were
@@ -31,7 +31,7 @@ numerical differences are expected).
 The flow-matching action expert starts from Gaussian noise x0. To compare two models (or two runtimes) without sampling
 noise, both must integrate from the SAME x0: re-seed right before the sampler draws x0, not only at the start of the call
 (the number of RNG draws consumed by CoC sampling differs between models and runtimes). `noise_seed=` in
-`PiscoModel.sample_trajectories_from_data_with_vlm_rollout` does this. Pitfall: a global `torch.manual_seed` alone gives
+`IshincaModel.sample_trajectories_from_data_with_vlm_rollout` does this. Pitfall: a global `torch.manual_seed` alone gives
 different x0 per model whenever the generated CoC length differs.
 
 "vs Teacher" additionally conditions on the CoC: Teacher AE path 0 from the Teacher's own CoT is the reference

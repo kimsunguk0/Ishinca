@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Smoke test of the plugin without the simulator: feed one saved sample through AlpaSim's driver `predict()`.
 
-  python smoke_predict.py --checkpoint ./Pisco-4B --inputs-npz inputs.npz [--reference pisco_out.npz]
+  python smoke_predict.py --checkpoint ./Ishinca-4B --inputs-npz inputs.npz [--reference ishinca_out.npz]
 
 inputs.npz comes from `scripts/infer.py --save-inputs`. With --reference (the .npz written by infer.py for the same
 checkpoint and seed 42) the printed difference should be ~0: the driver path and infer.py then run the same model on
@@ -19,7 +19,7 @@ import torch
 sys.path.insert(0, str(Path(__file__).parent))
 from alpasim_driver.models.base import CameraFrame, DriveCommand, PredictionInput  # noqa: E402
 from alpasim_grpc.v0.common_pb2 import PoseAtTime  # noqa: E402
-from pisco_alpasim.model import PiscoDriverModel  # noqa: E402
+from ishinca_alpasim.model import IshincaDriverModel  # noqa: E402
 
 NAMES = {0: "camera_cross_left_120fov", 1: "camera_front_wide_120fov", 2: "camera_cross_right_120fov", 6: "camera_front_tele_30fov"}
 
@@ -43,7 +43,7 @@ for i in range(16):
     p.pose.quat.x, p.pose.quat.y, p.pose.quat.z, p.pose.quat.w = map(float, quat[i])
     poses.append(p)
 cfg = types.SimpleNamespace(checkpoint_path=a.checkpoint, compiled_runtime=False, vlm_temperature=None, vlm_top_p=None)
-model = PiscoDriverModel.from_config(cfg, torch.device("cuda"), list(NAMES.values()), 4, 10)
+model = IshincaDriverModel.from_config(cfg, torch.device("cuda"), list(NAMES.values()), 4, 10)
 torch.manual_seed(42)
 model._model._seed_diffusion_noise(42)  # same x0 as infer.py --seed 42
 out = model.predict(PredictionInput(camera_images=imgs, command=DriveCommand.UNKNOWN, speed=0.0, acceleration=0.0,
