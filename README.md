@@ -22,24 +22,26 @@
 **Ishinca-4B** is a 4.2B-parameter student of NVIDIA's [Alpamayo-1.5-10B](https://huggingface.co/nvidia/Alpamayo-1.5-10B)
 end-to-end driving VLA. From 4 cameras × 4 frames and the ego history it produces a natural-language
 **Chain-of-Causation (CoC)** explanation and a **6.4 s trajectory**, like its teacher.
-In closed-loop simulation (AlpaSim, 150 scenes) it drives **on par with the 10B teacher**, and its DART variants
-**prune 25–50% of the vision tokens** without losing closed-loop score.
+In closed-loop simulation (AlpaSim, 150 scenes) it drives on par with the 10B teacher, and its DART variants
+prune 25–50% of the vision tokens without losing closed-loop score.
 
 <div align="center">
 
-| | Alpamayo-1.5 (Teacher) | **Ishinca-4B** | **Ishinca-4B-DART75** | **Ishinca-4B-DART50** |
+| | Alpamayo-1.5 (Teacher) | Ishinca-4B | Ishinca-4B-DART75 | Ishinca-4B-DART50 |
 |---|:---:|:---:|:---:|:---:|
-| Parameters | 10B | **4.2B** | **4.2B** | **4.2B** |
+| Parameters | 10B | 4.2B | 4.2B | 4.2B |
 | Open-loop minADE6@6.4s ↓ · our val set¹ | 0.826 | 0.986 | 0.994 | 1.003 |
 | Open-loop minADE6@6.4s ↓ · gold644² | 0.831 | 1.045 | — | — |
-| Closed-loop score ↑ · AlpaSim 150 scenes | 0.728 | 0.751 | 0.731 | **0.776** |
+| Closed-loop score ↑ · AlpaSim 150 scenes | 0.728 | 0.751 | 0.731 | 0.776 |
 
 </div>
 
 <sub>¹ Held-out validation set we built from PhysicalAI-AV (4,000 samples, not used for training), vs ground truth.
 ² The 644 public PhysicalAI-AV evaluation examples of **Table 10 (§6.4 Public Benchmark Evaluation)** in the
 Alpamayo-R1 paper ([arXiv:2511.00088](https://arxiv.org/abs/2511.00088)), clip list from NVIDIA's public recipe;
-measured by us with the official protocol (the paper reports 0.849 m for Alpamayo-R1-10B on this set).</sub>
+measured by us with the official protocol (the paper reports 0.849 m for Alpamayo-R1-10B on this set).
+Closed-loop differences among the four models are within run-to-run noise (paired scene bootstrap, 2 rollouts per scene).
+The released checkpoints are distillation-only; no reinforcement learning (GRPO) is applied (see [Roadmap](#-roadmap)).</sub>
 
 ## 📰 News
 
@@ -96,13 +98,13 @@ Score = 0 on an at-fault collision or off-road event, otherwise `min(progress / 
 
 | | Teacher 10B | Ishinca-4B | Ishinca-4B-DART75 | Ishinca-4B-DART50 |
 |---|:---:|:---:|:---:|:---:|
-| **Score** ↑ | 0.728 | 0.751 | 0.731 | **0.776** |
-| Failed rollouts / 300 ↓ | 40 | 37 | 45 | **37** |
-| ├ off-road | 32 | 34 | 35 | **30** |
-| └ at-fault collision | 8 | **3** | 10 | 7 |
+| Score ↑ | 0.728 | 0.751 | 0.731 | 0.776 |
+| Failed rollouts / 300 ↓ | 40 | 37 | 45 | 37 |
+| ├ off-road | 32 | 34 | 35 | 30 |
+| └ at-fault collision | 8 | 3 | 10 | 7 |
 
-The differences to the teacher are within run-to-run noise (paired scene bootstrap): **the 4B student drives like the
-10B teacher.**
+The differences among the four models are within run-to-run noise (paired scene bootstrap, 2 rollouts per scene), so
+the ranking above should not be read as one model being better: the 4B student drives like the 10B teacher.
 
 ### Open loop
 
@@ -133,7 +135,7 @@ Clip IDs and per-clip teacher references: [`eval/openloop/manifests`](eval/openl
 
 | Platform | Configuration | Latency |
 |---|---|:---:|
-| RTX 5090 | FP8 vision (QAD) + FP8 LLM (PTQ), streaming, 4-step action expert | **93.6 ms** (p95 98.5) |
+| RTX 5090 | FP8 vision (QAD) + FP8 LLM (PTQ), streaming, 4-step action expert | 93.6 ms (p95 98.5) |
 | Jetson AGX Thor | TensorRT Edge-LLM, NVFP4 4-step expert + INT8 LM head + GQA plugin | 383.3 ms |
 | Jetson AGX Thor | DART50, FP8 10-step expert (vs 498.1 ms without DART) | 401.8 ms |
 | RTX 3090 (x86) | this repo, eager PyTorch bf16, 8.0 GiB peak VRAM | ~1.1 s |
@@ -153,9 +155,9 @@ trend towards more at-fault collisions (150-scene run: Teacher 8 / Ishinca-4B 3 
 
 | Model | Vision tokens | DART keep | Weights |
 |---|:---:|:---:|---|
-| **Ishinca-4B** | 2,880 | — | [`suukim/Ishinca-4B`](https://huggingface.co/suukim/Ishinca-4B) |
-| **Ishinca-4B-DART75** | 2,160 | 0.75 | [`suukim/Ishinca-4B-DART75`](https://huggingface.co/suukim/Ishinca-4B-DART75) |
-| **Ishinca-4B-DART50** | 1,440 | 0.50 | [`suukim/Ishinca-4B-DART50`](https://huggingface.co/suukim/Ishinca-4B-DART50) |
+| Ishinca-4B | 2,880 | — | [`suukim/Ishinca-4B`](https://huggingface.co/suukim/Ishinca-4B) |
+| Ishinca-4B-DART75 | 2,160 | 0.75 | [`suukim/Ishinca-4B-DART75`](https://huggingface.co/suukim/Ishinca-4B-DART75) |
+| Ishinca-4B-DART50 | 1,440 | 0.50 | [`suukim/Ishinca-4B-DART50`](https://huggingface.co/suukim/Ishinca-4B-DART50) |
 
 Each checkpoint is a single bf16 `model.safetensors` (VLM 2.45B + action expert 1.77B parameters) plus the tokenizer and
 processor files; DART checkpoints store their keep ratio in `config.json` (`ishinca_dart_keep`).
@@ -233,6 +235,12 @@ upstream flow-matching expert) is used, bit-identical to upstream when nothing i
 - No navigation/route input: at junctions the model picks a plausible route, not necessarily the intended one.
 - Closed-loop results use non-reactive replayed traffic; at-fault labels are imperfect when the ego is slower than the log.
 - Trained and evaluated on PhysicalAI-AV camera rigs; camera mounting/calibration changes shift the predicted path.
+
+## 🔭 Roadmap
+
+- **Reinforcement learning (GRPO).** We are still studying reinforcement learning for driving VLAs. GRPO on the VLM
+  is the next step we plan to apply to Ishinca; early experiments are under way but are not part of this release.
+  **The released checkpoints do not use VLM GRPO** — they are trained by distillation from the teacher only.
 
 ## 📖 Citation
 
