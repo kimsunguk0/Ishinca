@@ -239,9 +239,9 @@ upstream flow-matching expert) is used, bit-identical to upstream when nothing i
 ## 🔭 Roadmap
 
 - **Goal: 10 FPS on Jetson AGX Thor.** The target is to run the VLA on Jetson AGX Thor at 10 FPS (100 ms per call).
-  The current best full-window Thor latency is 383.3 ms (model compute only, see [Deployment](#deployment-model-compute-only-full-16-frame-window)),
-  so the remaining work is mainly on the deployment side: vision tokens, prefill, CoC decoding and action-expert steps,
-  then streaming.
+  The current best full-window Thor latency is 383.3 ms (model compute only, see [Deployment](#deployment-model-compute-only-full-16-frame-window)).
+  Vision encoding, prefill and CoC decoding are still the main bottlenecks, so the next steps are compressing the
+  vision side and the prefill, and speeding up decoding.
 - **Reinforcement learning (GRPO).** We are still studying reinforcement learning for driving VLAs. GRPO on the VLM
   is the next step we plan to apply to Ishinca; early experiments are under way but are not part of this release.
   **The released checkpoints do not use VLM GRPO** — they are trained by distillation from the teacher only.
