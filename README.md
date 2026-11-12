@@ -13,6 +13,14 @@
 
 *Ishinca is the friendly, beginner-accessible summit of Peru's Cordillera Blanca — the same range as Alpamayo, just a gentler climb.*
 
+<br>
+
+<img src="assets/ishinca_teaser.gif" width="100%" alt="Ishinca-4B driving in AlpaSim closed loop"/>
+
+<sub>Ishinca-4B driving in AlpaSim closed loop — bird's-eye plan, front camera with the model's Chain-of-Causation, predicted
+trajectory. Three example rollouts picked for illustration (run on an earlier AlpaSim runtime with the released weights);
+aggregate numbers and failure cases are in <a href="#-results">Results</a>.</sub>
+
 </div>
 
 ---
