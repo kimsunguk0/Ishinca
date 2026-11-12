@@ -216,6 +216,20 @@ print(extra["cot"][0, 0, 0])   # e.g. "Nudge to the right to clear the construct
 print(xyz[0, 0, 0, :, :2])     # 64 × 2 waypoints, ego frame at t0, metres
 ```
 
+### Navigation input
+
+The model optionally takes a route instruction, inserted as `<|route_start|>…<|route_end|>` after the ego history
+(`nav_text=` in `build_model_inputs`, `--nav-text` in `scripts/infer.py`). Use the format seen in training:
+
+```
+<command> in <distance> meters        command ∈ {go straight, turn left, turn right},  distance: integer metres (0–100+)
+e.g.  "turn left in 20 meters"   "go straight in 39 meters"   "turn right in 0 meters"
+```
+
+About 21% of the training samples carried a route instruction (go straight 11.5%, turn right 4.9%, turn left 4.6% of all
+samples); the rest had none, so the model also runs without one. **These route instructions were created by us** — they
+are not part of the PhysicalAI-AV dataset and are not NVIDIA annotations — and they are not redistributed here.
+
 ## 📏 Evaluation
 
 | | Where | What you get |
@@ -242,10 +256,9 @@ upstream flow-matching expert) is used, bit-identical to upstream when nothing i
 ## ⚠️ Limitations
 
 - Research release — **not** a production driving system and not validated on real vehicles at scale.
-- Navigation: the model accepts a route instruction (e.g. `"turn left in 20 meters"`, `--nav-text`; about 21% of the
-  training samples carried one), but every evaluation reported here was run **without** it. Without a route, at junctions
-  and driveways the model picks a plausible route, not necessarily the intended one; a navigation-conditioned
-  evaluation is planned.
+- Navigation: the model accepts a route instruction (see [Navigation input](#navigation-input)), but every evaluation
+  reported here was run **without** it. Without a route, at junctions and driveways the model picks a plausible route,
+  not necessarily the intended one; a navigation-conditioned evaluation is planned.
 - Closed-loop results use non-reactive replayed traffic; at-fault labels are imperfect when the ego is slower than the log.
 - Trained and evaluated on PhysicalAI-AV camera rigs; camera mounting/calibration changes shift the predicted path.
 
