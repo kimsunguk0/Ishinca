@@ -31,7 +31,7 @@ An earlier runtime showed a larger student advantage on holdout58 (+0.096); with
 runtime it is +0.043 (n.s.).
 
 Failure analysis (all arms): 3 invalid-map scenes (GT path itself off-road: a9e8dfc7, cc8cbc45, 29815599); the rest are
-junction/turn-route errors (no navigation input -> route ambiguity), lane-keep drift and a few at-fault collisions.
+junction/turn-route errors (evaluated without a route instruction -> route ambiguity), lane-keep drift and a few at-fault collisions.
 The plan, not the controller, is the cause (tracking error <= 0.01 m). 14 scenes fail for all four arms.
 
 Collision rerun (9 scenes where collisions differed, 6 new rollouts per arm): at-fault collisions / 54: Teacher 10,

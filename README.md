@@ -155,7 +155,7 @@ release; the released checkpoints use the 10-step expert and run with the eager 
 
 Failures are scene-systematic and shared with the teacher (14 scenes fail for all four models). The plan — not the
 controller — is the cause (tracking error ≤ 0.01 m): turns cutting corners, route ambiguity at junctions and driveways
-(**no navigation input**), lane-keeping drift, and nudging around stopped vehicles. DART variants show a non-significant
+(all evaluations here run **without** a route instruction), lane-keeping drift, and nudging around stopped vehicles. DART variants show a non-significant
 trend towards more at-fault collisions (150-scene run: Teacher 8 / Ishinca-4B 3 / DART50 7 / DART75 10; 9-scene rerun ×6:
 10 / 11 / 19 / 21).
 
@@ -191,6 +191,7 @@ hf download suukim/Ishinca-4B --local-dir ./Ishinca-4B
 # one PhysicalAI-AV clip (gated dataset, see data/README.md)
 python scripts/infer.py --checkpoint ./Ishinca-4B --clip-id 030c760c-ae38-49aa-9ad8-f5650a545d26 --seed 42
 python scripts/infer.py --checkpoint ./Ishinca-4B-DART50 --clip-id <uuid>      # DART keep read from config.json
+python scripts/infer.py --checkpoint ./Ishinca-4B --clip-id <uuid> --nav-text "turn left in 20 meters"   # optional route
 ```
 
 ```python
@@ -203,7 +204,8 @@ model = load_ishinca("suukim/Ishinca-4B")                  # local dir or HF rep
 processor = get_processor(model)
 data = load_clip("<clip-id>", t0_us=5_100_000)          # 4 cams × 4 frames + ego history
 inputs = build_model_inputs(model, processor, data["image_frames"], data["camera_indices"],
-                            data["ego_history_xyz"], data["ego_history_rot"])
+                            data["ego_history_xyz"], data["ego_history_rot"],
+                            nav_text=None)              # or a route, e.g. "turn left in 20 meters"
 torch.manual_seed(42)
 with torch.autocast("cuda", dtype=torch.bfloat16):
     xyz, rot, extra = model.sample_trajectories_from_data_with_vlm_rollout(
@@ -240,7 +242,10 @@ upstream flow-matching expert) is used, bit-identical to upstream when nothing i
 ## ⚠️ Limitations
 
 - Research release — **not** a production driving system and not validated on real vehicles at scale.
-- No navigation/route input: at junctions the model picks a plausible route, not necessarily the intended one.
+- Navigation: the model accepts a route instruction (e.g. `"turn left in 20 meters"`, `--nav-text`; about 21% of the
+  training samples carried one), but every evaluation reported here was run **without** it. Without a route, at junctions
+  and driveways the model picks a plausible route, not necessarily the intended one; a navigation-conditioned
+  evaluation is planned.
 - Closed-loop results use non-reactive replayed traffic; at-fault labels are imperfect when the ego is slower than the log.
 - Trained and evaluated on PhysicalAI-AV camera rigs; camera mounting/calibration changes shift the predicted path.
 

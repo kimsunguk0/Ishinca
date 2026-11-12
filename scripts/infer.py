@@ -37,6 +37,7 @@ def main() -> None:
     ap.add_argument("--temperature", type=float, default=0.6)
     ap.add_argument("--top-p", type=float, default=0.98)
     ap.add_argument("--max-new-tokens", type=int, default=256)
+    ap.add_argument("--nav-text", help='route instruction, e.g. "turn left in 20 meters" (default: none)')
     ap.add_argument("--dart-keep", type=float, default=None, help="override DART keep fraction (default: from config)")
     ap.add_argument("--no-dart", action="store_true", help="disable DART even if the checkpoint config sets it")
     ap.add_argument("--ishinca-rollout", action="store_true", help="use the explicit rollout even without DART")
@@ -56,7 +57,7 @@ def main() -> None:
         save_inputs(a.save_inputs, data)
     inputs = build_model_inputs(
         model, processor, data["image_frames"], data["camera_indices"],
-        data["ego_history_xyz"], data["ego_history_rot"], a.device,
+        data["ego_history_xyz"], data["ego_history_rot"], a.device, nav_text=a.nav_text,
     )
 
     def run():
@@ -80,7 +81,7 @@ def main() -> None:
     xyz = pred_xyz[0, 0, 0].float().cpu().numpy()  # [64, 3] ego frame at t0, 0.1 s steps
     result = {
         "checkpoint": str(a.checkpoint), "clip_id": a.clip_id, "t0_us": a.t0_us, "seed": a.seed,
-        "dart_keep": model.dart_keep, "coc": str(extra["cot"][0, 0, 0]),
+        "dart_keep": model.dart_keep, "nav_text": a.nav_text, "coc": str(extra["cot"][0, 0, 0]),
         "pred_xy": xyz[:, :2].tolist(),
         "load_s": round(t_load, 2), "infer_s": round(t_infer, 3),
         "peak_vram_gib": round(torch.cuda.max_memory_allocated() / 2**30, 2),

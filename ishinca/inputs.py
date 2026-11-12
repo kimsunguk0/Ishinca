@@ -30,13 +30,16 @@ def build_model_inputs(
     ego_history_xyz: torch.Tensor,
     ego_history_rot: torch.Tensor,
     device: str | torch.device = "cuda",
+    nav_text: str | None = None,
 ) -> dict[str, Any]:
     """Args follow ``alpamayo1_5.load_physical_aiavdataset``:
 
     image_frames ``[N_cam, 4, 3, H, W]`` uint8 (sorted by camera index), camera_indices ``[N_cam]``,
     ego_history_xyz ``[1, 1, 16, 3]`` and ego_history_rot ``[1, 1, 16, 3, 3]`` in the t0 ego frame.
+    nav_text: optional route instruction (e.g. ``"turn left in 20 meters"``), inserted as
+    ``<|route_start|>...<|route_end|>`` after the ego history, as in training; ``None`` = no route.
     """
-    messages = helper.create_message(frames=image_frames.flatten(0, 1), camera_indices=camera_indices)
+    messages = helper.create_message(frames=image_frames.flatten(0, 1), camera_indices=camera_indices, nav_text=nav_text)
     tokenized = processor.apply_chat_template(
         messages, tokenize=True, add_generation_prompt=False, continue_final_message=True,
         return_dict=True, return_tensors="pt",
